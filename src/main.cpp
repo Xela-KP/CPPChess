@@ -4,6 +4,9 @@ int main()
 {
     U64 bitboard = 1ULL;
     map_leap_attacks();
-    print_bitboard(knight_attacks[a8]);
+    for (int i = 0; i < 8; i++)
+    {
+        print_bitboard(king_attacks[i]);
+    }
     return 0;
 }

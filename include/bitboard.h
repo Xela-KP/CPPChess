@@ -36,17 +36,17 @@ U64 mask_pawn_attacks(int side, int from_square)
     set_bit(bitboard, from_square);
     if (!side)
     {
-        if (bitboard & NOT_A_FILE)
-            attack_bitboard |= bitboard >> 9;
-        if (bitboard & NOT_H_FILE)
+        if (bitboard >> 7 & NOT_A_FILE)
             attack_bitboard |= bitboard >> 7;
+        if (bitboard >> 9 & NOT_H_FILE)
+            attack_bitboard |= bitboard >> 9;
     }
     else
     {
-        if (bitboard & NOT_A_FILE)
-            attack_bitboard |= bitboard << 7;
-        if (bitboard & NOT_H_FILE)
+        if (bitboard << 9 & NOT_A_FILE)
             attack_bitboard |= bitboard << 9;
+        if (bitboard >> 7 & NOT_H_FILE)
+            attack_bitboard |= bitboard << 7;
     }
     return attack_bitboard;
 }
@@ -56,26 +56,22 @@ U64 mask_knight_attacks(int from_square)
     U64 bitboard = 0ULL;
     U64 attack_bitboard = 0ULL;
     set_bit(bitboard, from_square);
-    if (bitboard & NOT_A_FILE)
-    {
-        attack_bitboard |= bitboard >> 17;
-        attack_bitboard |= bitboard << 15;
-    }
-    if (bitboard & NOT_H_FILE)
-    {
-        attack_bitboard |= bitboard << 17;
-        attack_bitboard |= bitboard >> 15;
-    }
-    if (bitboard & NOT_AB_FILE)
-    {
-        attack_bitboard |= bitboard >> 10;
-        attack_bitboard |= bitboard << 6;
-    }
-    if (bitboard & NOT_HG_FILE)
-    {
-        attack_bitboard |= bitboard << 10;
+    if (bitboard >> 6 & NOT_AB_FILE)
         attack_bitboard |= bitboard >> 6;
-    }
+    if (bitboard << 6 & NOT_HG_FILE)
+        attack_bitboard |= bitboard << 6;
+    if (bitboard << 10 & NOT_AB_FILE)
+        attack_bitboard |= bitboard << 10;
+    if (bitboard >> 10 & NOT_HG_FILE)
+        attack_bitboard |= bitboard >> 10;
+    if (bitboard >> 15 & NOT_A_FILE)
+        attack_bitboard |= bitboard >> 15;
+    if (bitboard << 15 & NOT_H_FILE)
+        attack_bitboard |= bitboard << 15;
+    if (bitboard << 17 & NOT_A_FILE)
+        attack_bitboard |= bitboard << 17;
+    if (bitboard >> 17 & NOT_H_FILE)
+        attack_bitboard |= bitboard >> 17;
     return attack_bitboard;
 }
 
@@ -84,20 +80,26 @@ U64 mask_king_attacks(int from_square)
     U64 bitboard = 0ULL;
     U64 attack_bitboard = 0ULL;
     set_bit(bitboard, from_square);
-    attack_bitboard |= bitboard >> 8;
-    attack_bitboard |= bitboard << 8;
-    if (bitboard & NOT_A_FILE)
-    {
-        attack_bitboard |= bitboard >> 1;
-        attack_bitboard |= bitboard >> 9;
-        attack_bitboard |= bitboard << 7;
-    }
-    if (bitboard & NOT_H_FILE)
-    {
+
+    if (bitboard >> 8)
+        attack_bitboard |= bitboard >> 8;
+    if (bitboard << 8)
+        attack_bitboard |= bitboard << 8;
+
+    if (bitboard << 1 & NOT_A_FILE)
         attack_bitboard |= bitboard << 1;
+    if (bitboard << 9 & NOT_A_FILE)
         attack_bitboard |= bitboard << 9;
+    if (bitboard >> 7 & NOT_A_FILE)
         attack_bitboard |= bitboard >> 7;
-    }
+
+    if (bitboard >> 1 & NOT_H_FILE)
+        attack_bitboard |= bitboard >> 1;
+    if (bitboard >> 9 & NOT_H_FILE)
+        attack_bitboard |= bitboard >> 9;
+    if (bitboard << 7 & NOT_H_FILE)
+        attack_bitboard |= bitboard << 7;
+
     return attack_bitboard;
 }
 
