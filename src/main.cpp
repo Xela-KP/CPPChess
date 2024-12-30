@@ -1,11 +1,14 @@
 #include <iostream>
-#include "../include/bitboard.h"
+#include "../include/bitboard.hpp"
+#include "../include/encodings.hpp"
+#include "../include/mask.cpp"
+#include "../include/util.cpp"
 int main()
 {
-    map_slide_attacks(ROOK);
-    map_slide_attacks(BISHOP);
-    map_leap_attacks();
-    initialize_occupancies();
-    print_chessboard();
+    Mask::map_slide_attacks(ChessEncoding::ROOK);
+    Mask::map_slide_attacks(ChessEncoding::BISHOP);
+    Mask::map_leap_attacks();
+    Mask::initialize_occupancies();
+    Util::print_chessboard();
     return 0;
 }
