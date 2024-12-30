@@ -88,19 +88,84 @@ U64 mask_king_attacks(int from_square)
 
     if (bitboard << 1 & NOT_A_FILE)
         attack_bitboard |= bitboard << 1;
-    if (bitboard << 9 & NOT_A_FILE)
-        attack_bitboard |= bitboard << 9;
-    if (bitboard >> 7 & NOT_A_FILE)
-        attack_bitboard |= bitboard >> 7;
-
     if (bitboard >> 1 & NOT_H_FILE)
         attack_bitboard |= bitboard >> 1;
-    if (bitboard >> 9 & NOT_H_FILE)
-        attack_bitboard |= bitboard >> 9;
+    if (bitboard >> 7 & NOT_A_FILE)
+        attack_bitboard |= bitboard >> 7;
     if (bitboard << 7 & NOT_H_FILE)
         attack_bitboard |= bitboard << 7;
+    if (bitboard << 9 & NOT_A_FILE)
+        attack_bitboard |= bitboard << 9;
+    if (bitboard >> 9 & NOT_H_FILE)
+        attack_bitboard |= bitboard >> 9;
+    return attack_bitboard;
+}
+
+U64 mask_bishop_attacks(int from_square)
+{
+    U64 attack_bitboard = 0ULL;
+    int rank, file;
+    int target_rank = from_square / DIMENSTION;
+    int target_file = from_square % DIMENSTION;
+
+    for (rank = target_rank + 1, file = target_file + 1;
+         rank < DIMENSTION - 1 && file < DIMENSTION - 1;
+         rank++, file++)
+        attack_bitboard |= (1ULL << (rank * 8 + file));
+
+    for (rank = target_rank - 1, file = target_file + 1;
+         rank > 0 && file < DIMENSTION - 1;
+         rank--, file++)
+        attack_bitboard |= (1ULL << (rank * 8 + file));
+
+    for (rank = target_rank + 1, file = target_file - 1;
+         rank < DIMENSTION - 1 && file > 0;
+         rank++, file--)
+        attack_bitboard |= (1ULL << (rank * 8 + file));
+
+    for (rank = target_rank - 1, file = target_file - 1;
+         rank > 0 && file > 0;
+         rank--, file--)
+        attack_bitboard |= (1ULL << (rank * 8 + file));
 
     return attack_bitboard;
+}
+
+U64 mask_rook_attacks(int from_square)
+{
+    U64 attack_bitboard = 0ULL;
+    int rank, file;
+    int target_rank = from_square / DIMENSTION;
+    int target_file = from_square % DIMENSTION;
+
+    for (rank = target_rank + 1; rank < DIMENSTION - 1; rank++)
+        attack_bitboard |= (1ULL << (rank * 8 + target_file));
+
+    for (rank = target_rank - 1; rank > 0; rank--)
+        attack_bitboard |= (1ULL << (rank * 8 + target_file));
+
+    for (file = target_file + 1; file < DIMENSTION - 1; file++)
+        attack_bitboard |= (1ULL << (target_rank * 8 + file));
+
+    for (file = target_file - 1; file > 0; file--)
+        attack_bitboard |= (1ULL << (target_rank * 8 + file));
+
+    return attack_bitboard;
+}
+
+U64 mask_queen_attacks()
+{
+    return 0ULL;
+}
+
+U64 mask_pawn_promotions()
+{
+    return 0ULL;
+}
+
+U64 mask_pawn_enpassant()
+{
+    return 0ULL;
 }
 
 void map_leap_attacks()
