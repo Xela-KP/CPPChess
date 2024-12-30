@@ -4,7 +4,7 @@
 #define BOARD_SIZE 64
 #define get_least_significant_bit(bitboard) (__builtin_ctzll((bitboard)))
 #define get_bit_count(bitboard) (__builtin_popcountll((bitboard)))
-namespace Bitboard
+namespace bitboard
 {
     inline bool get_bit(U64 &bitboard, int square) { return (bitboard & 1ULL << (square)) != 0; }
     inline void set_bit(U64 &bitboard, int square) { bitboard |= (1ULL << square); }

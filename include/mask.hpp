@@ -1,7 +1,7 @@
 #pragma once
 #include "types.hpp"
 #include "bitboard.hpp"
-namespace Mask
+namespace mask
 {
     U64 get_masked_occupancy(int occupied, U64 attack_mask);
     U64 get_pawn_attack_mask(int side, int from_square);

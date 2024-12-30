@@ -1,6 +1,6 @@
 #pragma once
 #include "types.hpp"
-namespace Magic
+namespace magic
 {
     const int BISHOP_ATTACK_COUNT_MASK[64] = {
         6, 5, 5, 5, 5, 5, 5, 6,

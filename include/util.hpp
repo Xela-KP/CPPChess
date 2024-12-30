@@ -1,6 +1,6 @@
 #pragma once
 #include "types.hpp"
-namespace Util
+namespace util
 {
     void print_bitboard(U64 bitboard);
     void print_piece_chessboard(int piece);

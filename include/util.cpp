@@ -3,7 +3,7 @@
 #include "util.hpp"
 #include "mask.hpp"
 #include "encodings.hpp"
-namespace Util
+namespace util
 {
     void print_bitboard(U64 bitboard)
     {
@@ -13,7 +13,7 @@ namespace Util
             for (int file = 0; file < DIMENSION; file++)
             {
                 int square = rank * DIMENSION + file;
-                std::cout << Bitboard::get_bit(bitboard, square) << ' ';
+                std::cout << bitboard::get_bit(bitboard, square) << ' ';
             }
             std::cout << ('\n');
         }
@@ -29,15 +29,15 @@ namespace Util
             for (int file = 0; file < DIMENSION; file++)
             {
                 int square = rank * DIMENSION + file;
-                std::cout << (Bitboard::get_bit(Mask::piece_occupancies[piece], square)
-                                  ? ChessEncoding::ASCII_PIECES[piece]
+                std::cout << (bitboard::get_bit(mask::piece_occupancies[piece], square)
+                                  ? chess::ASCII_PIECES[piece]
                                   : '.')
                           << ' ';
             }
             std::cout << ('\n');
         }
         std::cout << "\n    a b c d e f g h\n";
-        std::cout << "\n decimal value = " << std::dec << Mask::piece_occupancies[piece] << '\n';
+        std::cout << "\n decimal value = " << std::dec << mask::piece_occupancies[piece] << '\n';
     }
 
     void print_chessboard()
@@ -49,16 +49,16 @@ namespace Util
             {
                 int square = rank * DIMENSION + file;
                 char ascii = -1;
-                for (int piece = ChessEncoding::P; piece <= ChessEncoding::k; piece++)
+                for (int piece = chess::P; piece <= chess::k; piece++)
                 {
-                    if (Bitboard::get_bit(Mask::piece_occupancies[piece], square))
-                        ascii = ChessEncoding::ASCII_PIECES[piece];
+                    if (bitboard::get_bit(mask::piece_occupancies[piece], square))
+                        ascii = chess::ASCII_PIECES[piece];
                 }
                 std::cout << (ascii < 0 ? '+' : ascii) << ' ';
             }
             std::cout << ('\n');
         }
         std::cout << "\n    a b c d e f g h\n";
-        std::cout << "\n decimal value = " << std::dec << (Mask::side_occupancies[ChessEncoding::WHITE] | Mask::side_occupancies[ChessEncoding::BLACK]) << '\n';
+        std::cout << "\n decimal value = " << std::dec << (mask::side_occupancies[chess::WHITE] | mask::side_occupancies[chess::BLACK]) << '\n';
     }
 }

@@ -1,5 +1,5 @@
 #pragma once
-namespace ChessEncoding
+namespace chess
 {
     enum Piece
     {
@@ -127,7 +127,7 @@ namespace ChessEncoding
         h1,
         no_square
     };
-    enum CastleRight
+    enum CastlePrivelage
     {
         NO_CASTLE = 0,
         KK = 1,
