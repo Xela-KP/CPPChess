@@ -1,10 +1,10 @@
 #include "types.h"
 #define DIMENSION 8
 #define BOARD_SIZE 64
-#define get_bit(bitboard, square) (bitboard & (1ULL << square) ? 1 : 0)
-#define set_bit(bitboard, square) (bitboard |= (1ULL << square))
-#define clear_bit(bitborad, square) (bitboard &= ~(1ULL << square))
-#define get_LSB(b) (__builtin_ctzll(bitboard))
+#define get_bit(bitboard, square) ((bitboard) & (1ULL << (square)) ? 1 : 0)
+#define set_bit(bitboard, square) ((bitboard) |= (1ULL << (square)))
+#define clear_bit(bitborad, square) ((bitboard) &= ~(1ULL << (square)))
+#define get_LSB(b) (__builtin_ctzll((bitboard)))
 #define get_bit_count(bitboard) (__builtin_popcountll(bitboard))
 
 const U64 NOT_A_FILE = 18374403900871474942ULL;
