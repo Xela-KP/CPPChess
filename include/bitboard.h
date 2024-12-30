@@ -1,26 +1,37 @@
 #include "types.h"
-#define DIMENSTION 8
+#define DIMENSION 8
 #define BOARD_SIZE 64
 #define get_bit(bitboard, square) (bitboard & (1ULL << square) ? 1 : 0)
 #define set_bit(bitboard, square) (bitboard |= (1ULL << square))
 #define clear_bit(bitborad, square) (bitboard &= ~(1ULL << square))
+#define get_LSB(b) (__builtin_ctzll(bitboard))
+#define get_bit_count(bitboard) (__builtin_popcountll(bitboard))
 
 const U64 NOT_A_FILE = 18374403900871474942ULL;
 const U64 NOT_H_FILE = 9187201950435737471ULL;
 const U64 NOT_HG_FILE = 4557430888798830399ULL;
 const U64 NOT_AB_FILE = 18229723555195321596ULL;
-U64 pawn_attacks[2][BOARD_SIZE];
-U64 knight_attacks[BOARD_SIZE];
-U64 king_attacks[BOARD_SIZE];
+U64 pawn_attack_mask[2][BOARD_SIZE];
+U64 knight_attack_mask[BOARD_SIZE];
+U64 king_attack_mask[BOARD_SIZE];
+U64 bishop_attack_mask[BOARD_SIZE];
+U64 rook_attack_mask[BOARD_SIZE];
+
+static inline int pop_LSB(U64 &bitboard)
+{
+    int i = get_LSB(bitboard);
+    bitboard &= bitboard - 1;
+    return i == 64 ? -1 : i;
+}
 
 void print_bitboard(U64 bitboard)
 {
-    for (int rank = 0; rank < DIMENSTION; rank++)
+    for (int rank = 0; rank < DIMENSION; rank++)
     {
-        std::cout << DIMENSTION - rank << "   ";
-        for (int file = 0; file < DIMENSTION; file++)
+        std::cout << DIMENSION - rank << "   ";
+        for (int file = 0; file < DIMENSION; file++)
         {
-            int square = rank * DIMENSTION + file;
+            int square = rank * DIMENSION + file;
             std::cout << get_bit(bitboard, square) << ' ';
         }
         std::cout << ('\n');
@@ -29,152 +40,218 @@ void print_bitboard(U64 bitboard)
     std::cout << "\n decimal value = " << std::dec << bitboard << '\n';
 }
 
-U64 mask_pawn_attacks(int side, int from_square)
+U64 get_occupancy_bitboard(int occupied, U64 attack_mask)
+{
+    U64 occupancy = 0ULL;
+    int num_attacks = get_bit_count(attack_mask);
+    for (int count = 0; count < num_attacks; count++)
+    {
+        int square = pop_LSB(attack_mask);
+        if (occupied & (1 << count))
+        {
+            occupancy |= (1ULL << square);
+        }
+    }
+    return occupancy;
+}
+
+U64 get_pawn_attack_mask(int side, int from_square)
 {
     U64 bitboard = 0ULL;
-    U64 attack_bitboard = 0ULL;
+    U64 attack_mask = 0ULL;
     set_bit(bitboard, from_square);
     if (!side)
     {
         if (bitboard >> 7 & NOT_A_FILE)
-            attack_bitboard |= bitboard >> 7;
+            attack_mask |= bitboard >> 7;
         if (bitboard >> 9 & NOT_H_FILE)
-            attack_bitboard |= bitboard >> 9;
+            attack_mask |= bitboard >> 9;
     }
     else
     {
         if (bitboard << 9 & NOT_A_FILE)
-            attack_bitboard |= bitboard << 9;
+            attack_mask |= bitboard << 9;
         if (bitboard >> 7 & NOT_H_FILE)
-            attack_bitboard |= bitboard << 7;
+            attack_mask |= bitboard << 7;
     }
-    return attack_bitboard;
+    return attack_mask;
 }
 
-U64 mask_knight_attacks(int from_square)
+U64 get_knight_attack_mask(int from_square)
 {
     U64 bitboard = 0ULL;
-    U64 attack_bitboard = 0ULL;
+    U64 attack_mask = 0ULL;
     set_bit(bitboard, from_square);
     if (bitboard >> 6 & NOT_AB_FILE)
-        attack_bitboard |= bitboard >> 6;
+        attack_mask |= bitboard >> 6;
     if (bitboard << 6 & NOT_HG_FILE)
-        attack_bitboard |= bitboard << 6;
+        attack_mask |= bitboard << 6;
     if (bitboard << 10 & NOT_AB_FILE)
-        attack_bitboard |= bitboard << 10;
+        attack_mask |= bitboard << 10;
     if (bitboard >> 10 & NOT_HG_FILE)
-        attack_bitboard |= bitboard >> 10;
+        attack_mask |= bitboard >> 10;
     if (bitboard >> 15 & NOT_A_FILE)
-        attack_bitboard |= bitboard >> 15;
+        attack_mask |= bitboard >> 15;
     if (bitboard << 15 & NOT_H_FILE)
-        attack_bitboard |= bitboard << 15;
+        attack_mask |= bitboard << 15;
     if (bitboard << 17 & NOT_A_FILE)
-        attack_bitboard |= bitboard << 17;
+        attack_mask |= bitboard << 17;
     if (bitboard >> 17 & NOT_H_FILE)
-        attack_bitboard |= bitboard >> 17;
-    return attack_bitboard;
+        attack_mask |= bitboard >> 17;
+    return attack_mask;
 }
 
-U64 mask_king_attacks(int from_square)
+U64 get_king_attack_mask(int from_square)
 {
     U64 bitboard = 0ULL;
-    U64 attack_bitboard = 0ULL;
+    U64 attack_mask = 0ULL;
     set_bit(bitboard, from_square);
-
     if (bitboard >> 8)
-        attack_bitboard |= bitboard >> 8;
+        attack_mask |= bitboard >> 8;
     if (bitboard << 8)
-        attack_bitboard |= bitboard << 8;
-
+        attack_mask |= bitboard << 8;
     if (bitboard << 1 & NOT_A_FILE)
-        attack_bitboard |= bitboard << 1;
+        attack_mask |= bitboard << 1;
     if (bitboard >> 1 & NOT_H_FILE)
-        attack_bitboard |= bitboard >> 1;
+        attack_mask |= bitboard >> 1;
     if (bitboard >> 7 & NOT_A_FILE)
-        attack_bitboard |= bitboard >> 7;
+        attack_mask |= bitboard >> 7;
     if (bitboard << 7 & NOT_H_FILE)
-        attack_bitboard |= bitboard << 7;
+        attack_mask |= bitboard << 7;
     if (bitboard << 9 & NOT_A_FILE)
-        attack_bitboard |= bitboard << 9;
+        attack_mask |= bitboard << 9;
     if (bitboard >> 9 & NOT_H_FILE)
-        attack_bitboard |= bitboard >> 9;
-    return attack_bitboard;
+        attack_mask |= bitboard >> 9;
+    return attack_mask;
 }
 
-U64 mask_bishop_attacks(int from_square)
+U64 get_bishop_attack_mask(int from_square)
 {
-    U64 attack_bitboard = 0ULL;
+    U64 attack_mask = 0ULL;
     int rank, file;
-    int target_rank = from_square / DIMENSTION;
-    int target_file = from_square % DIMENSTION;
-
+    int target_rank = from_square / DIMENSION;
+    int target_file = from_square % DIMENSION;
     for (rank = target_rank + 1, file = target_file + 1;
-         rank < DIMENSTION - 1 && file < DIMENSTION - 1;
+         rank < DIMENSION - 1 && file < DIMENSION - 1;
          rank++, file++)
-        attack_bitboard |= (1ULL << (rank * 8 + file));
-
+        attack_mask |= (1ULL << (rank * 8 + file));
     for (rank = target_rank - 1, file = target_file + 1;
-         rank > 0 && file < DIMENSTION - 1;
+         rank > 0 && file < DIMENSION - 1;
          rank--, file++)
-        attack_bitboard |= (1ULL << (rank * 8 + file));
-
+        attack_mask |= (1ULL << (rank * 8 + file));
     for (rank = target_rank + 1, file = target_file - 1;
-         rank < DIMENSTION - 1 && file > 0;
+         rank < DIMENSION - 1 && file > 0;
          rank++, file--)
-        attack_bitboard |= (1ULL << (rank * 8 + file));
-
+        attack_mask |= (1ULL << (rank * 8 + file));
     for (rank = target_rank - 1, file = target_file - 1;
          rank > 0 && file > 0;
          rank--, file--)
-        attack_bitboard |= (1ULL << (rank * 8 + file));
-
-    return attack_bitboard;
+        attack_mask |= (1ULL << (rank * 8 + file));
+    return attack_mask;
 }
 
-U64 mask_rook_attacks(int from_square)
+U64 get_bishop_attack_mask_2(int from_square, U64 blockers_bitboard)
 {
-    U64 attack_bitboard = 0ULL;
+    U64 attack_mask = 0ULL;
     int rank, file;
-    int target_rank = from_square / DIMENSTION;
-    int target_file = from_square % DIMENSTION;
+    int target_rank = from_square / DIMENSION;
+    int target_file = from_square % DIMENSION;
 
-    for (rank = target_rank + 1; rank < DIMENSTION - 1; rank++)
-        attack_bitboard |= (1ULL << (rank * 8 + target_file));
+    for (rank = target_rank + 1, file = target_file + 1;
+         rank < DIMENSION && file < DIMENSION;
+         rank++, file++)
+    {
+        attack_mask |= (1ULL << (rank * 8 + file));
+        if ((1ULL << (rank * 8 + file)) & blockers_bitboard)
+            break;
+    }
+    for (rank = target_rank + 1, file = target_file - 1;
+         rank < DIMENSION && file >= 0;
+         rank++, file--)
+    {
+        attack_mask |= (1ULL << (rank * 8 + file));
+        if ((1ULL << (rank * 8 + file)) & blockers_bitboard)
+            break;
+    }
+    for (rank = target_rank - 1, file = target_file + 1;
+         rank >= 0 && file < DIMENSION;
+         rank--, file++)
+    {
+        attack_mask |= (1ULL << (rank * 8 + file));
+        if ((1ULL << (rank * 8 + file)) & blockers_bitboard)
+            break;
+    }
+    for (rank = target_rank - 1, file = target_file - 1;
+         rank >= 0 && file >= 0;
+         rank--, file--)
+    {
+        attack_mask |= (1ULL << (rank * 8 + file));
+        if ((1ULL << (rank * 8 + file)) & blockers_bitboard)
+            break;
+    }
 
+    return attack_mask;
+}
+
+U64 get_rook_attack_mask(int from_square)
+{
+    U64 attack_mask = 0ULL;
+    int rank, file;
+    int target_rank = from_square / DIMENSION;
+    int target_file = from_square % DIMENSION;
+    for (rank = target_rank + 1; rank < DIMENSION - 1; rank++)
+        attack_mask |= (1ULL << (rank * 8 + target_file));
     for (rank = target_rank - 1; rank > 0; rank--)
-        attack_bitboard |= (1ULL << (rank * 8 + target_file));
-
-    for (file = target_file + 1; file < DIMENSTION - 1; file++)
-        attack_bitboard |= (1ULL << (target_rank * 8 + file));
-
+        attack_mask |= (1ULL << (rank * 8 + target_file));
+    for (file = target_file + 1; file < DIMENSION - 1; file++)
+        attack_mask |= (1ULL << (target_rank * 8 + file));
     for (file = target_file - 1; file > 0; file--)
-        attack_bitboard |= (1ULL << (target_rank * 8 + file));
-
-    return attack_bitboard;
+        attack_mask |= (1ULL << (target_rank * 8 + file));
+    return attack_mask;
 }
 
-U64 mask_queen_attacks()
+U64 get_rook_attack_mask_2(int from_square, U64 blockers_bitboard)
 {
-    return 0ULL;
-}
-
-U64 mask_pawn_promotions()
-{
-    return 0ULL;
-}
-
-U64 mask_pawn_enpassant()
-{
-    return 0ULL;
+    U64 attack_mask = 0ULL;
+    int rank, file;
+    int target_rank = from_square / DIMENSION;
+    int target_file = from_square % DIMENSION;
+    for (rank = target_rank + 1; rank < DIMENSION; rank++)
+    {
+        attack_mask |= (1ULL << (rank * 8 + target_file));
+        if ((1ULL << (rank * 8 + target_file)) & blockers_bitboard)
+            break;
+    }
+    for (rank = target_rank - 1; rank >= 0; rank--)
+    {
+        attack_mask |= (1ULL << (rank * 8 + target_file));
+        if ((1ULL << (rank * 8 + target_file)) & blockers_bitboard)
+            break;
+    }
+    for (file = target_file + 1; file < DIMENSION; file++)
+    {
+        attack_mask |= (1ULL << (target_rank * 8 + file));
+        if ((1ULL << (rank * 8 + target_file)) & blockers_bitboard)
+            break;
+    }
+    for (file = target_file - 1; file >= 0; file--)
+    {
+        attack_mask |= (1ULL << (target_rank * 8 + file));
+        if ((1ULL << (rank * 8 + target_file)) & blockers_bitboard)
+            break;
+    }
+    return attack_mask;
 }
 
 void map_leap_attacks()
 {
     for (int from_square = a8; from_square <= h1; from_square++)
     {
-        pawn_attacks[white][from_square] = mask_pawn_attacks(white, from_square);
-        pawn_attacks[black][from_square] = mask_pawn_attacks(black, from_square);
-        knight_attacks[from_square] = mask_knight_attacks(from_square);
-        king_attacks[from_square] = mask_king_attacks(from_square);
+        pawn_attack_mask[white][from_square] = get_pawn_attack_mask(white, from_square);
+        pawn_attack_mask[black][from_square] = get_pawn_attack_mask(black, from_square);
+        knight_attack_mask[from_square] = get_knight_attack_mask(from_square);
+        king_attack_mask[from_square] = get_king_attack_mask(from_square);
+        // bishop_attack_mask[from_square] = get_bishop_attack_mask(from_square);
+        // rook_attack_mask[from_square] = get_rook_attack_mask(from_square);
     }
 }
