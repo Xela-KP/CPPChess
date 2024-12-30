@@ -268,8 +268,8 @@ void map_leap_attacks()
 {
     for (int from_square = a8; from_square <= h1; from_square++)
     {
-        pawn_attack_mask[white][from_square] = get_pawn_attack_mask(white, from_square);
-        pawn_attack_mask[black][from_square] = get_pawn_attack_mask(black, from_square);
+        pawn_attack_mask[WHITE][from_square] = get_pawn_attack_mask(WHITE, from_square);
+        pawn_attack_mask[BLACK][from_square] = get_pawn_attack_mask(BLACK, from_square);
         knight_attack_mask[from_square] = get_knight_attack_mask(from_square);
         king_attack_mask[from_square] = get_king_attack_mask(from_square);
     }

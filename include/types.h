@@ -3,13 +3,36 @@
 typedef unsigned long long U64;
 enum
 {
-    white,
-    black
+    WHITE,
+    BLACK
 };
 enum
 {
-    rook,
-    bishop
+    P,
+    N,
+    B,
+    R,
+    Q,
+    K,
+    p,
+    n,
+    b,
+    r,
+    q,
+    k
+};
+enum
+{
+    ROOK,
+    BISHOP
+};
+enum
+{
+    NO_CASTLE = 0,
+    KK = 1,
+    KQ = 2,
+    kk = 4,
+    kq = 8
 };
 enum
 {
@@ -240,21 +263,6 @@ const U64 BISHOP_MAGIC_NUMBERS[64] = {
     0x6000020202d0240ULL,
     0x8918844842082200ULL,
     0x4010011029020020ULL};
-enum
-{
-    P,
-    N,
-    B,
-    R,
-    Q,
-    K,
-    p,
-    n,
-    b,
-    r,
-    q,
-    k
-};
 const char ASCII_PIECES[12] = {'P', 'N', 'B', 'R', 'Q', 'K', 'p', 'n', 'b', 'r', 'q', 'k'};
 const std::string UNICODE_PIECES[12] = {
     "♙", "♘", "♗", "♖", "♕", "♔", "♟︎", "♞", "♝", "♜", "♛", "♚"};
