@@ -14,8 +14,10 @@ const U64 NOT_AB_FILE = 18229723555195321596ULL;
 U64 pawn_attack_mask[2][BOARD_SIZE];
 U64 knight_attack_mask[BOARD_SIZE];
 U64 king_attack_mask[BOARD_SIZE];
-U64 bishop_attack_mask[BOARD_SIZE];
-U64 rook_attack_mask[BOARD_SIZE];
+U64 bishop_unblocked_attack_mask[BOARD_SIZE];
+U64 rook_unblocked_attack_mask[BOARD_SIZE];
+U64 bishop_attack_mask[BOARD_SIZE][4096];
+U64 rook_attack_mask[BOARD_SIZE][4096];
 
 unsigned int random_number_state = 1804289383;
 
@@ -137,7 +139,7 @@ U64 get_king_attack_mask(int from_square)
     return attack_mask;
 }
 
-U64 get_bishop_attack_mask(int from_square)
+U64 get_bishop_unblocked_attack_mask(int from_square)
 {
     U64 attack_mask = 0ULL;
     int rank, file;
@@ -162,7 +164,7 @@ U64 get_bishop_attack_mask(int from_square)
     return attack_mask;
 }
 
-U64 get_bishop_attack_mask_2(int from_square, U64 blockers_bitboard)
+U64 get_bishop_blocked_attack_mask(int from_square, U64 occupancy)
 {
     U64 attack_mask = 0ULL;
     int rank, file;
@@ -174,7 +176,7 @@ U64 get_bishop_attack_mask_2(int from_square, U64 blockers_bitboard)
          rank++, file++)
     {
         attack_mask |= (1ULL << (rank * 8 + file));
-        if ((1ULL << (rank * 8 + file)) & blockers_bitboard)
+        if ((1ULL << (rank * 8 + file)) & occupancy)
             break;
     }
     for (rank = target_rank + 1, file = target_file - 1;
@@ -182,7 +184,7 @@ U64 get_bishop_attack_mask_2(int from_square, U64 blockers_bitboard)
          rank++, file--)
     {
         attack_mask |= (1ULL << (rank * 8 + file));
-        if ((1ULL << (rank * 8 + file)) & blockers_bitboard)
+        if ((1ULL << (rank * 8 + file)) & occupancy)
             break;
     }
     for (rank = target_rank - 1, file = target_file + 1;
@@ -190,7 +192,7 @@ U64 get_bishop_attack_mask_2(int from_square, U64 blockers_bitboard)
          rank--, file++)
     {
         attack_mask |= (1ULL << (rank * 8 + file));
-        if ((1ULL << (rank * 8 + file)) & blockers_bitboard)
+        if ((1ULL << (rank * 8 + file)) & occupancy)
             break;
     }
     for (rank = target_rank - 1, file = target_file - 1;
@@ -198,14 +200,14 @@ U64 get_bishop_attack_mask_2(int from_square, U64 blockers_bitboard)
          rank--, file--)
     {
         attack_mask |= (1ULL << (rank * 8 + file));
-        if ((1ULL << (rank * 8 + file)) & blockers_bitboard)
+        if ((1ULL << (rank * 8 + file)) & occupancy)
             break;
     }
 
     return attack_mask;
 }
 
-U64 get_rook_attack_mask(int from_square)
+U64 get_rook_unblocked_attack_mask(int from_square)
 {
     U64 attack_mask = 0ULL;
     int rank, file;
@@ -222,7 +224,7 @@ U64 get_rook_attack_mask(int from_square)
     return attack_mask;
 }
 
-U64 get_rook_attack_mask_2(int from_square, U64 blockers_bitboard)
+U64 get_rook_blocked_attack_mask(int from_square, U64 occupancy)
 {
     U64 attack_mask = 0ULL;
     int rank, file;
@@ -231,28 +233,44 @@ U64 get_rook_attack_mask_2(int from_square, U64 blockers_bitboard)
     for (rank = target_rank + 1; rank < DIMENSION; rank++)
     {
         attack_mask |= (1ULL << (rank * 8 + target_file));
-        if ((1ULL << (rank * 8 + target_file)) & blockers_bitboard)
+        if ((1ULL << (rank * 8 + target_file)) & occupancy)
             break;
     }
     for (rank = target_rank - 1; rank >= 0; rank--)
     {
         attack_mask |= (1ULL << (rank * 8 + target_file));
-        if ((1ULL << (rank * 8 + target_file)) & blockers_bitboard)
+        if ((1ULL << (rank * 8 + target_file)) & occupancy)
             break;
     }
     for (file = target_file + 1; file < DIMENSION; file++)
     {
         attack_mask |= (1ULL << (target_rank * 8 + file));
-        if ((1ULL << (rank * 8 + target_file)) & blockers_bitboard)
+        if ((1ULL << (target_rank * 8 + file)) & occupancy)
             break;
     }
     for (file = target_file - 1; file >= 0; file--)
     {
         attack_mask |= (1ULL << (target_rank * 8 + file));
-        if ((1ULL << (rank * 8 + target_file)) & blockers_bitboard)
+        if ((1ULL << (target_rank * 8 + file)) & occupancy)
             break;
     }
     return attack_mask;
+}
+
+static inline U64 get_bishop_attack_mask(U64 square, U64 occupancy)
+{
+    occupancy &= bishop_unblocked_attack_mask[square];
+    occupancy *= BISHOP_MAGIC_NUMBERS[square];
+    occupancy >>= 64 - BISHOP_ATTACK_COUNT_MASK[square];
+    return bishop_attack_mask[square][occupancy];
+}
+
+static inline U64 get_rook_attack_mask(U64 square, U64 occupancy)
+{
+    occupancy &= rook_unblocked_attack_mask[square];
+    occupancy *= ROOK_MAGIC_NUMBERS[square];
+    occupancy >>= 64 - ROOK_ATTACK_COUNT_MASK[square];
+    return rook_attack_mask[square][occupancy];
 }
 
 void map_leap_attacks()
@@ -263,12 +281,31 @@ void map_leap_attacks()
         pawn_attack_mask[black][from_square] = get_pawn_attack_mask(black, from_square);
         knight_attack_mask[from_square] = get_knight_attack_mask(from_square);
         king_attack_mask[from_square] = get_king_attack_mask(from_square);
-        // bishop_attack_mask[from_square] = get_bishop_attack_mask(from_square);
-        // rook_attack_mask[from_square] = get_rook_attack_mask(from_square);
     }
 }
 
-void map_slide_attacks()
+void map_slide_attacks(int bishop)
 {
-    return;
+    for (int from_square = a8; from_square <= h1; from_square++)
+    {
+        bishop_unblocked_attack_mask[from_square] = get_bishop_unblocked_attack_mask(from_square);
+        rook_unblocked_attack_mask[from_square] = get_rook_unblocked_attack_mask(from_square);
+        U64 attack_mask = bishop ? bishop_unblocked_attack_mask[from_square] : rook_unblocked_attack_mask[from_square];
+        int num_attacks = get_bit_count(attack_mask);
+        int occupancy_indicies = (1 << num_attacks);
+        for (int index = 0; index < occupancy_indicies; index++)
+        {
+            U64 masked_occupancy = get_masked_occupancy(index, attack_mask);
+            if (bishop)
+            {
+                int magic_index = (masked_occupancy * BISHOP_MAGIC_NUMBERS[from_square]) >> (64 - BISHOP_ATTACK_COUNT_MASK[from_square]);
+                bishop_attack_mask[from_square][magic_index] = get_bishop_blocked_attack_mask(from_square, masked_occupancy);
+            }
+            else
+            {
+                int magic_index = (masked_occupancy * ROOK_MAGIC_NUMBERS[from_square]) >> (64 - ROOK_ATTACK_COUNT_MASK[from_square]);
+                rook_attack_mask[from_square][magic_index] = get_rook_blocked_attack_mask(from_square, masked_occupancy);
+            }
+        }
+    }
 }
