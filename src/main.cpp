@@ -2,8 +2,8 @@
 #include "../include/bitboard.h"
 int main()
 {
-    map_slide_attacks(rook);
-    map_slide_attacks(bishop);
+    map_slide_attacks(ROOK);
+    map_slide_attacks(BISHOP);
     U64 bitboard = 0ULL;
     set_bit(bitboard, d2);
     set_bit(bitboard, d7);
