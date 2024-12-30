@@ -19,18 +19,6 @@ U64 rook_unblocked_attack_mask[BOARD_SIZE];
 U64 bishop_attack_mask[BOARD_SIZE][4096];
 U64 rook_attack_mask[BOARD_SIZE][4096];
 
-unsigned int random_number_state = 1804289383;
-
-unsigned int get_pseudo_RNG()
-{
-    unsigned int number = random_number_state;
-    number ^= number << 13;
-    number ^= number >> 17;
-    number ^= number << 5;
-    random_number_state = number;
-    return number;
-}
-
 static inline int pop_LSB(U64 &bitboard)
 {
     int i = get_LSB(bitboard);
