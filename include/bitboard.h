@@ -17,6 +17,18 @@ U64 king_attack_mask[BOARD_SIZE];
 U64 bishop_attack_mask[BOARD_SIZE];
 U64 rook_attack_mask[BOARD_SIZE];
 
+unsigned int random_number_state = 1804289383;
+
+unsigned int get_pseudo_RNG()
+{
+    unsigned int number = random_number_state;
+    number ^= number << 13;
+    number ^= number >> 17;
+    number ^= number << 5;
+    random_number_state = number;
+    return number;
+}
+
 static inline int pop_LSB(U64 &bitboard)
 {
     int i = get_LSB(bitboard);
@@ -40,7 +52,7 @@ void print_bitboard(U64 bitboard)
     std::cout << "\n decimal value = " << std::dec << bitboard << '\n';
 }
 
-U64 get_occupancy_bitboard(int occupied, U64 attack_mask)
+U64 get_masked_occupancy(int occupied, U64 attack_mask)
 {
     U64 occupancy = 0ULL;
     int num_attacks = get_bit_count(attack_mask);
@@ -254,4 +266,9 @@ void map_leap_attacks()
         // bishop_attack_mask[from_square] = get_bishop_attack_mask(from_square);
         // rook_attack_mask[from_square] = get_rook_attack_mask(from_square);
     }
+}
+
+void map_slide_attacks()
+{
+    return;
 }
