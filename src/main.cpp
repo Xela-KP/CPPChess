@@ -4,17 +4,16 @@ int main()
 {
     map_slide_attacks(ROOK);
     map_slide_attacks(BISHOP);
-    U64 bitboard = 0ULL;
-    set_bit(bitboard, d2);
-    set_bit(bitboard, d7);
-    set_bit(bitboard, b4);
-    set_bit(bitboard, f4);
-    print_bitboard(bitboard);
-    print_bitboard(get_rook_attack_mask(d4, bitboard));
-    // for (int i = 0; i < 64; i++)
-    // {
-    //     print_bitboard(rook_attack_mask[0][i]);
-    // }
-
+    map_leap_attacks();
+    initialize_occupancies();
+    for (int i = P; i <= k; i++)
+    {
+        print_bitboard(piece_occupancies[i]);
+    }
+    print_bitboard(side_occupancies[WHITE]);
+    print_bitboard(side_occupancies[BLACK]);
+    print_bitboard(side_occupancies[BOTH]);
+    // print_bitboard(piece_occupancies[P]);
+    // print_bitboard(piece_occupancies[p]);
     return 0;
 }

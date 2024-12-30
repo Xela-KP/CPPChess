@@ -4,7 +4,8 @@ typedef unsigned long long U64;
 enum
 {
     WHITE,
-    BLACK
+    BLACK,
+    BOTH
 };
 enum
 {

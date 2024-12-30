@@ -300,3 +300,46 @@ void map_slide_attacks(int bishop)
         }
     }
 }
+
+void initialize_occupancies()
+{
+    for (int i = a2; i <= h2; i++)
+    {
+        set_bit(piece_occupancies[P], i);
+    }
+    for (int i = a7; i <= h7; i++)
+    {
+        set_bit(piece_occupancies[p], i);
+    }
+
+    set_bit(piece_occupancies[N], b1);
+    set_bit(piece_occupancies[N], g1);
+    set_bit(piece_occupancies[n], b8);
+    set_bit(piece_occupancies[n], g8);
+
+    set_bit(piece_occupancies[R], a1);
+    set_bit(piece_occupancies[R], h1);
+    set_bit(piece_occupancies[r], a8);
+    set_bit(piece_occupancies[r], h8);
+
+    set_bit(piece_occupancies[B], c1);
+    set_bit(piece_occupancies[B], f1);
+    set_bit(piece_occupancies[b], c8);
+    set_bit(piece_occupancies[b], f8);
+
+    set_bit(piece_occupancies[K], d1);
+    set_bit(piece_occupancies[k], d8);
+    set_bit(piece_occupancies[Q], e1);
+    set_bit(piece_occupancies[q], e8);
+
+    for (int i = P; i <= K; i++)
+    {
+        side_occupancies[WHITE] |= piece_occupancies[i];
+        side_occupancies[BOTH] |= piece_occupancies[i];
+    }
+    for (int i = p; i <= k; i++)
+    {
+        side_occupancies[BLACK] |= piece_occupancies[i];
+        side_occupancies[BOTH] |= piece_occupancies[i];
+    }
+}
