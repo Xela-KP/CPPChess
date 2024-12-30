@@ -8,7 +8,7 @@ namespace fen
     {
         memset(mask::piece_occupancies, 0ULL, sizeof(mask::piece_occupancies));
         memset(mask::side_occupancies, 0ULL, sizeof(mask::side_occupancies));
-        state::side = 0;
+        state::side = chess::WHITE;
         state::enpassant = chess::NO_SQUARE;
         state::castle = chess::NO_CASTLE;
         int i = 0;
@@ -42,25 +42,26 @@ namespace fen
             }
         }
         i++;
-        (fen[i] == 'w') ? (state::side = chess::BLACK) : (state::side = chess::BLACK);
-        fen += 2;
+        state::side = fen[i] == 'w' ? chess::WHITE : chess::BLACK;
+        i += 2;
         while (fen[i] != ' ')
         {
             switch (fen[i])
             {
             case 'K':
-                state::castle |= chess::KK;
+                state::castle |= chess::wk;
                 break;
             case 'Q':
-                state::castle |= chess::KQ;
+                state::castle |= chess::wq;
                 break;
             case 'k':
-                state::castle |= chess::kk;
+                state::castle |= chess::bk;
                 break;
             case 'q':
-                state::castle |= chess::kq;
+                state::castle |= chess::bq;
                 break;
             case '-':
+                state::castle |= chess::NO_CASTLE;
                 break;
             }
             i++;
@@ -68,8 +69,8 @@ namespace fen
         i++;
         if (fen[i] != '-')
         {
-            int file = fen[0] - 'a';
-            int rank = 8 - (fen[1] - '0');
+            int file = fen[i] - 'a';
+            int rank = 8 - (fen[i + 1] - '0');
             state::enpassant = rank * 8 + file;
         }
         else

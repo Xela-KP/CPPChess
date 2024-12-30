@@ -3,6 +3,7 @@
 #include "util.hpp"
 #include "mask.hpp"
 #include "encodings.hpp"
+#include "state.hpp"
 namespace util
 {
     void print_bitboard(U64 bitboard)
@@ -59,6 +60,13 @@ namespace util
             std::cout << ('\n');
         }
         std::cout << "\n    a b c d e f g h\n";
-        std::cout << "\n decimal value = " << std::dec << (mask::side_occupancies[chess::WHITE] | mask::side_occupancies[chess::BLACK]) << '\n';
+        std::cout << "\n    side:       " << (state::side ? "black" : "white");
+        std::cout << "\n    enpassant:  " << (chess::SQUARE_TO_ALGEBRAIC_NOTATION[state::enpassant]);
+        std::cout << "\n    castle:     "
+                  << (state::castle & chess::wk ? "K" : "-")
+                  << (state::castle & chess::wq ? "Q" : "-")
+                  << (state::castle & chess::bk ? "k" : "-")
+                  << (state::castle & chess::bq ? "q" : "-")
+                  << "\n\n";
     }
 }
