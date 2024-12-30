@@ -125,7 +125,7 @@ namespace chess
         f1,
         g1,
         h1,
-        no_square
+        NO_SQUARE
     };
     enum CastlePrivelage
     {

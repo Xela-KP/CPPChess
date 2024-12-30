@@ -1,80 +1,84 @@
 #include "fen.hpp"
 #include "mask.hpp"
 #include "encodings.hpp"
-void parse_fen(char *fen)
+#include "state.hpp"
+namespace fen
 {
-    // memset(Mask::Mask::piece_occupancies, 0ULL, sizeof(Mask::piece_occupancies));
-    // memset(Mask::side_occupancies, 0ULL, sizeof(Mask::side_occupancies));
-    // side = 0;
-    // enpassant = no_sq;
-    // castle = 0;
-    // for (int rank = 0; rank < 8; rank++)
-    // {
-    //     for (int file = 0; file < 8; file++)
-    //     {
-    //         int square = rank * 8 + file;
-    //         if ((*fen >= 'a' && *fen <= 'z') || (*fen >= 'A' && *fen <= 'Z'))
-    //         {
-    //             int piece = char_pieces[*fen];
-    //             set_bit(bitboards[piece], square);
-    //             fen++;
-    //         }
-    //         if (*fen >= '0' && *fen <= '9')
-    //         {
-    //             int offset = *fen - '0';
-    //             int piece = -1;
-    //             for (int bb_piece = P; bb_piece <= k; bb_piece++)
-    //             {
-    //                 if (get_bit(bitboards[bb_piece], square))
-    //                     piece = bb_piece;
-    //             }
-    //             if (piece == -1)
-    //                 file--;
-    //             file += offset;
-    //             fen++;
-    //         }
-    //         if (*fen == '/')
-    //             fen++;
-    //     }
-    // }
-    // fen++;
-    // (*fen == 'w') ? (side = white) : (side = black);
-    // fen += 2;
-    // while (*fen != ' ')
-    // {
-    //     switch (*fen)
-    //     {
-    //     case 'K':
-    //         castle |= wk;
-    //         break;
-    //     case 'Q':
-    //         castle |= wq;
-    //         break;
-    //     case 'k':
-    //         castle |= bk;
-    //         break;
-    //     case 'q':
-    //         castle |= bq;
-    //         break;
-    //     case '-':
-    //         break;
-    //     }
-    //     fen++;
-    // }
-    // fen++;
-    // if (*fen != '-')
-    // {
-    //     int file = fen[0] - 'a';
-    //     int rank = 8 - (fen[1] - '0');
-    //     enpassant = rank * 8 + file;
-    // }
-    // else
-    //     enpassant = no_sq;
-    // for (int piece = P; piece <= K; piece++)
-    //     occupancies[white] |= bitboards[piece];
-
-    // for (int piece = p; piece <= k; piece++)
-    //     occupancies[black] |= bitboards[piece];
-    // occupancies[both] |= occupancies[white];
-    // occupancies[both] |= occupancies[black];
+    void parse_fen(std::string fen)
+    {
+        memset(mask::piece_occupancies, 0ULL, sizeof(mask::piece_occupancies));
+        memset(mask::side_occupancies, 0ULL, sizeof(mask::side_occupancies));
+        state::side = 0;
+        state::enpassant = chess::NO_SQUARE;
+        state::castle = chess::NO_CASTLE;
+        int i = 0;
+        for (int rank = 0; rank < DIMENSION; rank++)
+        {
+            for (int file = 0; file < DIMENSION; file++)
+            {
+                int square = rank * DIMENSION + file;
+                if ((fen[i] >= 'a' && fen[i] <= 'z') || (fen[i] >= 'A' && fen[i] <= 'Z'))
+                {
+                    int piece = chess::ASCII_INT[fen[i]];
+                    bitboard::set_bit(mask::piece_occupancies[piece], square);
+                    i++;
+                }
+                if (fen[i] >= '0' && fen[i] <= '9')
+                {
+                    int offset = fen[i] - '0';
+                    int piece = -1;
+                    for (int bb_piece = chess::P; bb_piece <= chess::k; bb_piece++)
+                    {
+                        if (bitboard::get_bit(mask::piece_occupancies[bb_piece], square))
+                            piece = bb_piece;
+                    }
+                    if (piece == -1)
+                        file--;
+                    file += offset;
+                    i++;
+                }
+                if (fen[i] == '/')
+                    i++;
+            }
+        }
+        i++;
+        (fen[i] == 'w') ? (state::side = chess::BLACK) : (state::side = chess::BLACK);
+        fen += 2;
+        while (fen[i] != ' ')
+        {
+            switch (fen[i])
+            {
+            case 'K':
+                state::castle |= chess::KK;
+                break;
+            case 'Q':
+                state::castle |= chess::KQ;
+                break;
+            case 'k':
+                state::castle |= chess::kk;
+                break;
+            case 'q':
+                state::castle |= chess::kq;
+                break;
+            case '-':
+                break;
+            }
+            i++;
+        }
+        i++;
+        if (fen[i] != '-')
+        {
+            int file = fen[0] - 'a';
+            int rank = 8 - (fen[1] - '0');
+            state::enpassant = rank * 8 + file;
+        }
+        else
+            state::enpassant = chess::NO_SQUARE;
+        for (int piece = chess::P; piece <= chess::K; piece++)
+            mask::side_occupancies[chess::WHITE] |= mask::piece_occupancies[piece];
+        for (int piece = chess::p; piece <= chess::k; piece++)
+            mask::side_occupancies[chess::BLACK] |= mask::piece_occupancies[piece];
+        mask::side_occupancies[chess::BOTH] |= mask::side_occupancies[chess::WHITE];
+        mask::side_occupancies[chess::BOTH] |= mask::side_occupancies[chess::WHITE];
+    }
 }
