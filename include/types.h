@@ -1,22 +1,82 @@
+#include <string>
+#include <unordered_map>
 typedef unsigned long long U64;
 enum
 {
     white,
     black
 };
-enum {
+enum
+{
     rook,
     bishop
 };
-enum {
-    a8, b8, c8, d8, e8, f8, g8, h8,
-    a7, b7, c7, d7, e7, f7, g7, h7,
-    a6, b6, c6, d6, e6, f6, g6, h6,
-    a5, b5, c5, d5, e5, f5, g5, h5,
-    a4, b4, c4, d4, e4, f4, g4, h4,
-    a3, b3, c3, d3, e3, f3, g3, h3,
-    a2, b2, c2, d2, e2, f2, g2, h2,
-    a1, b1, c1, d1, e1, f1, g1, h1
+enum
+{
+    a8,
+    b8,
+    c8,
+    d8,
+    e8,
+    f8,
+    g8,
+    h8,
+    a7,
+    b7,
+    c7,
+    d7,
+    e7,
+    f7,
+    g7,
+    h7,
+    a6,
+    b6,
+    c6,
+    d6,
+    e6,
+    f6,
+    g6,
+    h6,
+    a5,
+    b5,
+    c5,
+    d5,
+    e5,
+    f5,
+    g5,
+    h5,
+    a4,
+    b4,
+    c4,
+    d4,
+    e4,
+    f4,
+    g4,
+    h4,
+    a3,
+    b3,
+    c3,
+    d3,
+    e3,
+    f3,
+    g3,
+    h3,
+    a2,
+    b2,
+    c2,
+    d2,
+    e2,
+    f2,
+    g2,
+    h2,
+    a1,
+    b1,
+    c1,
+    d1,
+    e1,
+    f1,
+    g1,
+    h1
 };
 
 const char *SQUARE_TO_ALGEBRAIC[64] = {
@@ -27,8 +87,7 @@ const char *SQUARE_TO_ALGEBRAIC[64] = {
     "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
     "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
     "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
-    "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"
-};
+    "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"};
 
 const int BISHOP_ATTACK_COUNT_MASK[64] = {
     6, 5, 5, 5, 5, 5, 5, 6,
@@ -38,8 +97,7 @@ const int BISHOP_ATTACK_COUNT_MASK[64] = {
     5, 5, 7, 9, 9, 7, 5, 5,
     5, 5, 7, 7, 7, 7, 5, 5,
     5, 5, 5, 5, 5, 5, 5, 5,
-    6, 5, 5, 5, 5, 5, 5, 6
-};
+    6, 5, 5, 5, 5, 5, 5, 6};
 
 const int ROOK_ATTACK_COUNT_MASK[64] = {
     12, 11, 11, 11, 11, 11, 11, 12,
@@ -182,3 +240,42 @@ const U64 BISHOP_MAGIC_NUMBERS[64] = {
     0x6000020202d0240ULL,
     0x8918844842082200ULL,
     0x4010011029020020ULL};
+enum
+{
+    P,
+    N,
+    B,
+    R,
+    Q,
+    K,
+    p,
+    n,
+    b,
+    r,
+    q,
+    k
+};
+const char ASCII_PIECES[12] = {'P', 'N', 'B', 'R', 'Q', 'K', 'p', 'n', 'b', 'r', 'q', 'k'};
+const char UNICODE_PIECES[12] = {'♙', '♘', '♗', '♖', '♕', '♔', '♟︎', '♞', '♝', '♜', '♛', '♚'};
+const int ASCII_ENCODING[256] = {
+    ['P'] = P,
+    ['N'] = N,
+    ['B'] = B,
+    ['R'] = R,
+    ['Q'] = Q,
+    ['K'] = K,
+    ['p'] = p,
+    ['n'] = n,
+    ['b'] = b,
+    ['r'] = r,
+    ['q'] = q,
+    ['k'] = k};
+const char PROMOTED_PIECE[] = {
+    [Q] = 'q',
+    [R] = 'r',
+    [B] = 'b',
+    [N] = 'n',
+    [q] = 'q',
+    [r] = 'r',
+    [b] = 'b',
+    [n] = 'n'};

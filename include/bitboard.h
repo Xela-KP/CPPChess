@@ -19,6 +19,22 @@ U64 rook_unblocked_attack_mask[BOARD_SIZE];
 U64 bishop_attack_mask[BOARD_SIZE][4096];
 U64 rook_attack_mask[BOARD_SIZE][4096];
 
+U64 Pboard;
+U64 pboard;
+U64 Nboard;
+U64 nboard;
+U64 Kboard;
+U64 kboard;
+U64 Bboard;
+U64 bboard;
+U64 Rboard;
+U64 rboard;
+U64 Qboard;
+U64 qboard;
+
+U64 piece_occupancies[12] = {};
+U64 side_occupancies[3];
+
 static inline int pop_LSB(U64 &bitboard)
 {
     int i = get_LSB(bitboard);
