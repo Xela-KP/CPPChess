@@ -256,7 +256,8 @@ enum
     k
 };
 const char ASCII_PIECES[12] = {'P', 'N', 'B', 'R', 'Q', 'K', 'p', 'n', 'b', 'r', 'q', 'k'};
-const char UNICODE_PIECES[12] = {'♙', '♘', '♗', '♖', '♕', '♔', '♟︎', '♞', '♝', '♜', '♛', '♚'};
+const std::string UNICODE_PIECES[12] = {
+    "♙", "♘", "♗", "♖", "♕", "♔", "♟︎", "♞", "♝", "♜", "♛", "♚"};
 const int ASCII_ENCODING[256] = {
     ['P'] = P,
     ['N'] = N,
