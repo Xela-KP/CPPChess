@@ -1,6 +1,7 @@
 #include "fen.hpp"
 #include "mask.hpp"
 #include "encodings.hpp"
+#include "bitboard.hpp"
 #include "state.hpp"
 namespace fen
 {
@@ -70,8 +71,8 @@ namespace fen
         if (fen[i] != '-')
         {
             int file = fen[i] - 'a';
-            int rank = 8 - (fen[i + 1] - '0');
-            state::enpassant = rank * 8 + file;
+            int rank = DIMENSION - (fen[i + 1] - '0');
+            state::enpassant = rank * DIMENSION + file;
         }
         else
             state::enpassant = chess::NO_SQUARE;

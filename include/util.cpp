@@ -2,7 +2,6 @@
 #include <iostream>
 #include "util.hpp"
 #include "mask.hpp"
-#include "encodings.hpp"
 #include "state.hpp"
 namespace util
 {
@@ -22,7 +21,7 @@ namespace util
         std::cout << "\n decimal value = " << std::dec << bitboard << '\n';
     }
 
-    void print_piece_chessboard(int piece)
+    void print_piece_chessboard(chess::Piece piece)
     {
         for (int rank = 0; rank < DIMENSION; rank++)
         {
