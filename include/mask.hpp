@@ -13,9 +13,9 @@ namespace mask
     U64 get_rook_blocked_attack_mask(int from_square, U64 occupancy);
     static inline U64 get_bishop_attack_mask(U64 square, U64 occupancy);
     static inline U64 get_rook_attack_mask(U64 square, U64 occupancy);
+    static inline int get_num_attackers_on(int side, int square);
     void map_leap_attacks();
     void map_slide_attacks();
-    void initialize_occupancies();
     const U64 NOT_A_FILE = 18374403900871474942ULL;
     const U64 NOT_H_FILE = 9187201950435737471ULL;
     const U64 NOT_HG_FILE = 4557430888798830399ULL;

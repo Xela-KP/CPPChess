@@ -270,46 +270,33 @@ namespace mask
         }
     }
 
-    void initialize_occupancies()
+    static inline int get_num_attackers_on(int side, int square)
     {
-        for (int i = chess::a2; i <= chess::h2; i++)
-        {
-            bitboard::set_bit(piece_occupancies[chess::P], i);
-        }
-        for (int i = chess::a7; i <= chess::h7; i++)
-        {
-            bitboard::set_bit(piece_occupancies[chess::p], i);
-        }
-
-        bitboard::set_bit(piece_occupancies[chess::N], chess::b1);
-        bitboard::set_bit(piece_occupancies[chess::N], chess::g1);
-        bitboard::set_bit(piece_occupancies[chess::n], chess::b8);
-        bitboard::set_bit(piece_occupancies[chess::n], chess::g8);
-
-        bitboard::set_bit(piece_occupancies[chess::R], chess::a1);
-        bitboard::set_bit(piece_occupancies[chess::R], chess::h1);
-        bitboard::set_bit(piece_occupancies[chess::r], chess::a8);
-        bitboard::set_bit(piece_occupancies[chess::r], chess::h8);
-
-        bitboard::set_bit(piece_occupancies[chess::B], chess::c1);
-        bitboard::set_bit(piece_occupancies[chess::B], chess::f1);
-        bitboard::set_bit(piece_occupancies[chess::b], chess::c8);
-        bitboard::set_bit(piece_occupancies[chess::b], chess::f8);
-
-        bitboard::set_bit(piece_occupancies[chess::K], chess::d1);
-        bitboard::set_bit(piece_occupancies[chess::k], chess::d8);
-        bitboard::set_bit(piece_occupancies[chess::Q], chess::e1);
-        bitboard::set_bit(piece_occupancies[chess::q], chess::e8);
-
-        for (int i = chess::P; i <= chess::K; i++)
-        {
-            side_occupancies[chess::WHITE] |= piece_occupancies[i];
-            side_occupancies[chess::BOTH] |= piece_occupancies[i];
-        }
-        for (int i = chess::p; i <= chess::k; i++)
-        {
-            side_occupancies[chess::BLACK] |= piece_occupancies[i];
-            side_occupancies[chess::BOTH] |= piece_occupancies[i];
-        }
+        int num_attackers = 0;
+        U64 pawn_attack_mask = mask::get_pawn_attack_mask(!side, square);
+        U64 pawn_occupancy = mask::piece_occupancies[side ? chess::p : chess::P];
+        if (pawn_attack_mask & pawn_occupancy)
+            num_attackers++;
+        U64 knight_attack_mask = mask::get_knight_attack_mask(square);
+        U64 knight_occupancy = mask::piece_occupancies[side ? chess::n : chess::N];
+        if (knight_attack_mask & knight_occupancy)
+            num_attackers++;
+        U64 king_attack_mask = mask::get_king_attack_mask(square);
+        U64 king_occupancy = mask::piece_occupancies[side ? chess::k : chess::K];
+        if (king_attack_mask & king_occupancy)
+            num_attackers++;
+        U64 bishop_attack_mask = mask::get_bishop_attack_mask(square, mask::side_occupancies[chess::BOTH]);
+        U64 bishop_occupancy = mask::piece_occupancies[side ? chess::b : chess::B];
+        if (bishop_attack_mask & bishop_occupancy)
+            num_attackers++;
+        U64 rook_attack_mask = mask::get_rook_attack_mask(square, mask::side_occupancies[chess::BOTH]);
+        U64 rook_occupancy = mask::piece_occupancies[side ? chess::r : chess::R];
+        if (rook_attack_mask & rook_occupancy)
+            num_attackers++;
+        U64 queen_attack_mask = mask::get_queen_attack_mask(square, mask::side_occupancies[chess::BOTH]);
+        U64 queen_occupancy = mask::piece_occupancies[side ? chess::q : chess::Q];
+        if (queen_attack_mask & queen_occupancy)
+            num_attackers++;
+        return num_attackers;
     }
 }
