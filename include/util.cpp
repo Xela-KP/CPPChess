@@ -30,7 +30,7 @@ namespace util
             for (int file = 0; file < DIMENSION; file++)
             {
                 int square = rank * DIMENSION + file;
-                std::cout << (bitboard::get_bit(mask::piece_occupancies[piece], square)
+                std::cout << (bitboard::get_bit(state::piece_occupancies[piece], square)
                                   ? chess::ASCII_PIECES[piece]
                                   : '.')
                           << ' ';
@@ -38,7 +38,7 @@ namespace util
             std::cout << ('\n');
         }
         std::cout << "\n    a b c d e f g h\n";
-        std::cout << "\n decimal value = " << std::dec << mask::piece_occupancies[piece] << '\n';
+        std::cout << "\n decimal value = " << std::dec << state::piece_occupancies[piece] << '\n';
     }
 
     void print_chessboard()
@@ -52,7 +52,7 @@ namespace util
                 char ascii = -1;
                 for (int piece = chess::P; piece <= chess::k; piece++)
                 {
-                    if (bitboard::get_bit(mask::piece_occupancies[piece], square))
+                    if (bitboard::get_bit(state::piece_occupancies[piece], square))
                         ascii = chess::ASCII_PIECES[piece];
                 }
                 std::cout << (ascii < 0 ? '+' : ascii) << ' ';

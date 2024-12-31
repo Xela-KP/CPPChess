@@ -28,6 +28,4 @@ namespace mask
     U64 bishop_attack_mask[BOARD_SIZE][4096];
     U64 rook_attack_mask[BOARD_SIZE][4096];
     U64 queen_attack_mask[BOARD_SIZE][4096];
-    U64 piece_occupancies[12];
-    U64 side_occupancies[3];
 }

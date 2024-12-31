@@ -6,8 +6,8 @@ namespace fen
 {
     void parse_fen(std::string fen)
     {
-        memset(mask::piece_occupancies, 0ULL, sizeof(mask::piece_occupancies));
-        memset(mask::side_occupancies, 0ULL, sizeof(mask::side_occupancies));
+        memset(state::piece_occupancies, 0ULL, sizeof(state::piece_occupancies));
+        memset(state::side_occupancies, 0ULL, sizeof(state::side_occupancies));
         state::side = chess::WHITE;
         state::enpassant = chess::NO_SQUARE;
         state::castle = chess::NO_CASTLE;
@@ -20,7 +20,7 @@ namespace fen
                 if ((fen[i] >= 'a' && fen[i] <= 'z') || (fen[i] >= 'A' && fen[i] <= 'Z'))
                 {
                     int piece = chess::ASCII_INT[fen[i]];
-                    bitboard::set_bit(mask::piece_occupancies[piece], square);
+                    bitboard::set_bit(state::piece_occupancies[piece], square);
                     i++;
                 }
                 if (fen[i] >= '0' && fen[i] <= '9')
@@ -29,7 +29,7 @@ namespace fen
                     int piece = -1;
                     for (int bb_piece = chess::P; bb_piece <= chess::k; bb_piece++)
                     {
-                        if (bitboard::get_bit(mask::piece_occupancies[bb_piece], square))
+                        if (bitboard::get_bit(state::piece_occupancies[bb_piece], square))
                             piece = bb_piece;
                     }
                     if (piece == -1)
@@ -76,10 +76,10 @@ namespace fen
         else
             state::enpassant = chess::NO_SQUARE;
         for (int piece = chess::P; piece <= chess::K; piece++)
-            mask::side_occupancies[chess::WHITE] |= mask::piece_occupancies[piece];
+            state::side_occupancies[chess::WHITE] |= state::piece_occupancies[piece];
         for (int piece = chess::p; piece <= chess::k; piece++)
-            mask::side_occupancies[chess::BLACK] |= mask::piece_occupancies[piece];
-        mask::side_occupancies[chess::BOTH] |= mask::side_occupancies[chess::WHITE];
-        mask::side_occupancies[chess::BOTH] |= mask::side_occupancies[chess::BLACK];
+            state::side_occupancies[chess::BLACK] |= state::piece_occupancies[piece];
+        state::side_occupancies[chess::BOTH] |= state::side_occupancies[chess::WHITE];
+        state::side_occupancies[chess::BOTH] |= state::side_occupancies[chess::BLACK];
     }
 }
