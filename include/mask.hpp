@@ -14,7 +14,7 @@ namespace mask
     static inline U64 get_bishop_attack_mask(U64 square, U64 occupancy);
     static inline U64 get_rook_attack_mask(U64 square, U64 occupancy);
     void map_leap_attacks();
-    void map_slide_attacks(int bishop);
+    void map_slide_attacks();
     void initialize_occupancies();
     const U64 NOT_A_FILE = 18374403900871474942ULL;
     const U64 NOT_H_FILE = 9187201950435737471ULL;
@@ -27,6 +27,7 @@ namespace mask
     U64 rook_unblocked_attack_mask[BOARD_SIZE];
     U64 bishop_attack_mask[BOARD_SIZE][4096];
     U64 rook_attack_mask[BOARD_SIZE][4096];
+    U64 queen_attack_mask[BOARD_SIZE][4096];
     U64 piece_occupancies[12];
     U64 side_occupancies[3];
 }
