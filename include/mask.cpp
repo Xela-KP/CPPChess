@@ -21,7 +21,7 @@ namespace mask
         return occupancy;
     }
 
-    U64 get_pawn_attack_mask(int side, int from_square)
+    static inline U64 get_pawn_attack_mask(int side, int from_square)
     {
         U64 bitboard = 0ULL;
         U64 attack_mask = 0ULL;
@@ -43,7 +43,7 @@ namespace mask
         return attack_mask;
     }
 
-    U64 get_knight_attack_mask(int from_square)
+    static inline U64 get_knight_attack_mask(int from_square)
     {
         U64 bitboard = 0ULL;
         U64 attack_mask = 0ULL;
@@ -67,7 +67,7 @@ namespace mask
         return attack_mask;
     }
 
-    U64 get_king_attack_mask(int from_square)
+    static inline U64 get_king_attack_mask(int from_square)
     {
         U64 bitboard = 0ULL;
         U64 attack_mask = 0ULL;
@@ -90,6 +90,24 @@ namespace mask
             attack_mask |= bitboard >> 9;
         return attack_mask;
     }
+
+    static inline U64 get_bishop_attack_mask(U64 square, U64 occupancy)
+    {
+        occupancy &= state::bishop_unblocked_attack_mask[square];
+        occupancy *= magic::BISHOP_MAGIC_NUMBERS[square];
+        occupancy >>= 64 - magic::BISHOP_ATTACK_COUNT_MASK[square];
+        return state::bishop_attack_mask[square][occupancy];
+    }
+
+    static inline U64 get_rook_attack_mask(U64 square, U64 occupancy)
+    {
+        occupancy &= state::rook_unblocked_attack_mask[square];
+        occupancy *= magic::ROOK_MAGIC_NUMBERS[square];
+        occupancy >>= 64 - magic::ROOK_ATTACK_COUNT_MASK[square];
+        return state::rook_attack_mask[square][occupancy];
+    }
+
+    static inline U64 get_queen_attack_mask(U64 square, U64 occupancy) { return get_bishop_attack_mask(square, occupancy) | get_rook_attack_mask(square, occupancy); }
 
     U64 get_bishop_unblocked_attack_mask(int from_square)
     {
@@ -209,32 +227,14 @@ namespace mask
         return attack_mask;
     }
 
-    static inline U64 get_bishop_attack_mask(U64 square, U64 occupancy)
-    {
-        occupancy &= bishop_unblocked_attack_mask[square];
-        occupancy *= magic::BISHOP_MAGIC_NUMBERS[square];
-        occupancy >>= 64 - magic::BISHOP_ATTACK_COUNT_MASK[square];
-        return bishop_attack_mask[square][occupancy];
-    }
-
-    static inline U64 get_rook_attack_mask(U64 square, U64 occupancy)
-    {
-        occupancy &= rook_unblocked_attack_mask[square];
-        occupancy *= magic::ROOK_MAGIC_NUMBERS[square];
-        occupancy >>= 64 - magic::ROOK_ATTACK_COUNT_MASK[square];
-        return rook_attack_mask[square][occupancy];
-    }
-
-    static inline U64 get_queen_attack_mask(U64 square, U64 occupancy) { return get_bishop_attack_mask(square, occupancy) | get_rook_attack_mask(square, occupancy); }
-
     void map_leap_attacks()
     {
         for (int from_square = chess::a8; from_square <= chess::h1; from_square++)
         {
-            pawn_attack_mask[chess::WHITE][from_square] = get_pawn_attack_mask(chess::WHITE, from_square);
-            pawn_attack_mask[chess::BLACK][from_square] = get_pawn_attack_mask(chess::BLACK, from_square);
-            knight_attack_mask[from_square] = get_knight_attack_mask(from_square);
-            king_attack_mask[from_square] = get_king_attack_mask(from_square);
+            state::pawn_attack_mask[chess::WHITE][from_square] = get_pawn_attack_mask(chess::WHITE, from_square);
+            state::pawn_attack_mask[chess::BLACK][from_square] = get_pawn_attack_mask(chess::BLACK, from_square);
+            state::knight_attack_mask[from_square] = get_knight_attack_mask(from_square);
+            state::king_attack_mask[from_square] = get_king_attack_mask(from_square);
         }
     }
 
@@ -242,10 +242,10 @@ namespace mask
     {
         for (int from_square = chess::a8; from_square <= chess::h1; from_square++)
         {
-            bishop_unblocked_attack_mask[from_square] = get_bishop_unblocked_attack_mask(from_square);
-            rook_unblocked_attack_mask[from_square] = get_rook_unblocked_attack_mask(from_square);
+            state::bishop_unblocked_attack_mask[from_square] = get_bishop_unblocked_attack_mask(from_square);
+            state::rook_unblocked_attack_mask[from_square] = get_rook_unblocked_attack_mask(from_square);
 
-            U64 bishop_unblocked_mask = bishop_unblocked_attack_mask[from_square];
+            U64 bishop_unblocked_mask = state::bishop_unblocked_attack_mask[from_square];
             int bishop_num_attacks = get_bit_count(bishop_unblocked_mask);
             int bishop_occupancy_indices = (1 << bishop_num_attacks);
 
@@ -253,11 +253,11 @@ namespace mask
             {
                 U64 masked_occupancy = get_masked_occupancy(occupancy_index, bishop_unblocked_mask);
                 int magic_index = (masked_occupancy * magic::BISHOP_MAGIC_NUMBERS[from_square]) >> (64 - magic::BISHOP_ATTACK_COUNT_MASK[from_square]);
-                bishop_attack_mask[from_square][magic_index] = get_bishop_blocked_attack_mask(from_square, masked_occupancy);
-                queen_attack_mask[from_square][magic_index] |= bishop_attack_mask[from_square][magic_index];
+                state::bishop_attack_mask[from_square][magic_index] = get_bishop_blocked_attack_mask(from_square, masked_occupancy);
+                state::queen_attack_mask[from_square][magic_index] |= state::bishop_attack_mask[from_square][magic_index];
             }
 
-            U64 rook_unblocked_mask = rook_unblocked_attack_mask[from_square];
+            U64 rook_unblocked_mask = state::rook_unblocked_attack_mask[from_square];
             int rook_num_attacks = get_bit_count(rook_unblocked_mask);
             int rook_occupancy_indices = (1 << rook_num_attacks);
 
@@ -265,8 +265,8 @@ namespace mask
             {
                 U64 masked_occupancy = get_masked_occupancy(occupancy_index, rook_unblocked_mask);
                 int magic_index = (masked_occupancy * magic::ROOK_MAGIC_NUMBERS[from_square]) >> (64 - magic::ROOK_ATTACK_COUNT_MASK[from_square]);
-                rook_attack_mask[from_square][magic_index] = get_rook_blocked_attack_mask(from_square, masked_occupancy);
-                queen_attack_mask[from_square][magic_index] |= rook_attack_mask[from_square][magic_index];
+                state::rook_attack_mask[from_square][magic_index] = get_rook_blocked_attack_mask(from_square, masked_occupancy);
+                state::queen_attack_mask[from_square][magic_index] |= state::rook_attack_mask[from_square][magic_index];
             }
         }
     }
