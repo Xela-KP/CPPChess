@@ -80,6 +80,6 @@ namespace fen
         for (int piece = chess::p; piece <= chess::k; piece++)
             mask::side_occupancies[chess::BLACK] |= mask::piece_occupancies[piece];
         mask::side_occupancies[chess::BOTH] |= mask::side_occupancies[chess::WHITE];
-        mask::side_occupancies[chess::BOTH] |= mask::side_occupancies[chess::WHITE];
+        mask::side_occupancies[chess::BOTH] |= mask::side_occupancies[chess::BLACK];
     }
 }
