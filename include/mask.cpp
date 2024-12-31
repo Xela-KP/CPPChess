@@ -274,29 +274,23 @@ namespace mask
     static inline int get_num_attackers_on(int side, int square)
     {
         int num_attackers = 0;
-        U64 pawn_attack_mask = mask::get_pawn_attack_mask(!side, square);
-        U64 pawn_occupancy = state::piece_occupancies[side ? chess::p : chess::P];
-        if (pawn_attack_mask & pawn_occupancy)
+        if (mask::get_pawn_attack_mask(!side, square) &
+            state::piece_occupancies[side ? chess::p : chess::P])
             num_attackers++;
-        U64 knight_attack_mask = mask::get_knight_attack_mask(square);
-        U64 knight_occupancy = state::piece_occupancies[side ? chess::n : chess::N];
-        if (knight_attack_mask & knight_occupancy)
+        if (mask::get_knight_attack_mask(square) &
+            state::piece_occupancies[side ? chess::n : chess::N])
             num_attackers++;
-        U64 king_attack_mask = mask::get_king_attack_mask(square);
-        U64 king_occupancy = state::piece_occupancies[side ? chess::k : chess::K];
-        if (king_attack_mask & king_occupancy)
+        if (mask::get_king_attack_mask(square) &
+            state::piece_occupancies[side ? chess::k : chess::K])
             num_attackers++;
-        U64 bishop_attack_mask = mask::get_bishop_attack_mask(square, state::side_occupancies[chess::BOTH]);
-        U64 bishop_occupancy = state::piece_occupancies[side ? chess::b : chess::B];
-        if (bishop_attack_mask & bishop_occupancy)
+        if (mask::get_bishop_attack_mask(square, state::side_occupancies[chess::BOTH]) &
+            state::piece_occupancies[side ? chess::b : chess::B])
             num_attackers++;
-        U64 rook_attack_mask = mask::get_rook_attack_mask(square, state::side_occupancies[chess::BOTH]);
-        U64 rook_occupancy = state::piece_occupancies[side ? chess::r : chess::R];
-        if (rook_attack_mask & rook_occupancy)
+        if (mask::get_rook_attack_mask(square, state::side_occupancies[chess::BOTH]) &
+            state::piece_occupancies[side ? chess::r : chess::R])
             num_attackers++;
-        U64 queen_attack_mask = mask::get_queen_attack_mask(square, state::side_occupancies[chess::BOTH]);
-        U64 queen_occupancy = state::piece_occupancies[side ? chess::q : chess::Q];
-        if (queen_attack_mask & queen_occupancy)
+        if (mask::get_queen_attack_mask(square, state::side_occupancies[chess::BOTH]) &
+            state::piece_occupancies[side ? chess::q : chess::Q])
             num_attackers++;
         return num_attackers;
     }
