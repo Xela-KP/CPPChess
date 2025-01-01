@@ -1,5 +1,6 @@
 #pragma once
 #include "encodings.hpp"
+#include <vector>
 namespace state
 {
     int color = chess::WHITE;
