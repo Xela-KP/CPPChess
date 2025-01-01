@@ -15,4 +15,5 @@ namespace state
     U64 rook_unblocked_attack_mask[BOARD_SIZE];
     U64 piece_occupancies[12];
     U64 side_occupancies[3];
+    std::vector<int> moves;
 }

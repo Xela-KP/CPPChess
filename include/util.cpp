@@ -4,6 +4,7 @@
 #include "util.hpp"
 #include "mask.hpp"
 #include "state.hpp"
+#include "movement.hpp"
 namespace util
 {
     void print_bitboard(U64 bitboard)
@@ -69,4 +70,20 @@ namespace util
                   << (state::castle_privelage & chess::bq ? "q" : "-")
                   << "\n\n";
     }
+
+    void print_attacked_squares(int color)
+    {
+        for (int rank = 0; rank < DIMENSION; rank++)
+        {
+            std::cout << DIMENSION - rank << "   ";
+            for (int file = 0; file < DIMENSION; file++)
+            {
+                int square = rank * DIMENSION + file;
+                std::cout << movement::get_num_attackers_on(square, color) << ' ';
+            }
+            std::cout << ('\n');
+        }
+        std::cout << "\n    a b c d e f g h\n";
+        std::cout << "\n    attacks from: " << (color ? "black" : "white\n");
+    };
 }

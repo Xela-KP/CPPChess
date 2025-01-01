@@ -1,7 +1,7 @@
 CXX = clang++
 CXXFLAGS = -std=c++11
 
-SRCS = main.cpp mask.cpp util.cpp
+SRCS = main.cpp util.cpp mask.cpp fen.cpp movement.cpp
 OBJS = $(SRCS:.cpp=.o)
 OUT = main
 
