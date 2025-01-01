@@ -2,7 +2,6 @@
 #include "encodings.hpp"
 namespace state
 {
-
     int color = chess::WHITE;
     int enpassant_square = chess::NO_SQUARE;
     int castle_privelage = chess::NO_CASTLE;
