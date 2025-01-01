@@ -2,11 +2,10 @@
 #include "encodings.hpp"
 namespace state
 {
-    
-    int side = chess::WHITE;
-    int enpassant = chess::NO_SQUARE;
-    int castle = chess::NO_CASTLE;
 
+    int color = chess::WHITE;
+    int enpassant_square = chess::NO_SQUARE;
+    int castle_privelage = chess::NO_CASTLE;
     U64 pawn_attack_mask[2][BOARD_SIZE];
     U64 knight_attack_mask[BOARD_SIZE];
     U64 king_attack_mask[BOARD_SIZE];

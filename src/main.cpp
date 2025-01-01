@@ -6,5 +6,7 @@ int main()
 {
     mask::map_slide_attacks();
     mask::map_leap_attacks();
+    fen::parse_fen(TRICKY_POSITION);
+    util::print_chessboard();
     return 0;
 }

@@ -9,9 +9,9 @@ namespace fen
     {
         memset(state::piece_occupancies, 0ULL, sizeof(state::piece_occupancies));
         memset(state::side_occupancies, 0ULL, sizeof(state::side_occupancies));
-        state::side = chess::WHITE;
-        state::enpassant = chess::NO_SQUARE;
-        state::castle = chess::NO_CASTLE;
+        state::color = chess::WHITE;
+        state::enpassant_square = chess::NO_SQUARE;
+        state::castle_privelage = chess::NO_CASTLE;
         int i = 0;
         for (int rank = 0; rank < DIMENSION; rank++)
         {
@@ -43,26 +43,26 @@ namespace fen
             }
         }
         i++;
-        state::side = fen[i] == 'w' ? chess::WHITE : chess::BLACK;
+        state::color = fen[i] == 'w' ? chess::WHITE : chess::BLACK;
         i += 2;
         while (fen[i] != ' ')
         {
             switch (fen[i])
             {
             case 'K':
-                state::castle |= chess::wk;
+                state::castle_privelage |= chess::wk;
                 break;
             case 'Q':
-                state::castle |= chess::wq;
+                state::castle_privelage |= chess::wq;
                 break;
             case 'k':
-                state::castle |= chess::bk;
+                state::castle_privelage |= chess::bk;
                 break;
             case 'q':
-                state::castle |= chess::bq;
+                state::castle_privelage |= chess::bq;
                 break;
             case '-':
-                state::castle |= chess::NO_CASTLE;
+                state::castle_privelage |= chess::NO_CASTLE;
                 break;
             }
             i++;
@@ -72,10 +72,10 @@ namespace fen
         {
             int file = fen[i] - 'a';
             int rank = DIMENSION - (fen[i + 1] - '0');
-            state::enpassant = rank * DIMENSION + file;
+            state::enpassant_square = rank * DIMENSION + file;
         }
         else
-            state::enpassant = chess::NO_SQUARE;
+            state::enpassant_square = chess::NO_SQUARE;
         for (int piece = chess::P; piece <= chess::K; piece++)
             state::side_occupancies[chess::WHITE] |= state::piece_occupancies[piece];
         for (int piece = chess::p; piece <= chess::k; piece++)

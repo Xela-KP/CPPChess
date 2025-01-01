@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include "bitboard.hpp"
 #include "util.hpp"
 #include "mask.hpp"
 #include "state.hpp"
@@ -59,13 +60,13 @@ namespace util
             std::cout << ('\n');
         }
         std::cout << "\n    a b c d e f g h\n";
-        std::cout << "\n    side:       " << (state::side ? "black" : "white");
-        std::cout << "\n    enpassant:  " << (chess::SQUARE_TO_ALGEBRAIC_NOTATION[state::enpassant]);
+        std::cout << "\n    side:       " << (state::color ? "black" : "white");
+        std::cout << "\n    enpassant:  " << (chess::SQUARE_TO_ALGEBRAIC_NOTATION[state::enpassant_square]);
         std::cout << "\n    castle:     "
-                  << (state::castle & chess::wk ? "K" : "-")
-                  << (state::castle & chess::wq ? "Q" : "-")
-                  << (state::castle & chess::bk ? "k" : "-")
-                  << (state::castle & chess::bq ? "q" : "-")
+                  << (state::castle_privelage & chess::wk ? "K" : "-")
+                  << (state::castle_privelage & chess::wq ? "Q" : "-")
+                  << (state::castle_privelage & chess::bk ? "k" : "-")
+                  << (state::castle_privelage & chess::bq ? "q" : "-")
                   << "\n\n";
     }
 }
