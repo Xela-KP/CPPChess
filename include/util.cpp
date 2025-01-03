@@ -87,7 +87,7 @@ namespace util
         std::cout << "\n    attacks from: " << (color ? "black" : "white\n");
     };
 
-    void print_pawn_moves(int color)
+    void print_moves(int color)
     {
         for (int rank = 0; rank < DIMENSION; rank++)
         {

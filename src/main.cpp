@@ -7,11 +7,9 @@ int main()
 {
     mask::map_slide_attacks();
     mask::map_leap_attacks();
-    fen::parse_fen(KILLER_POSITION);
+    fen::parse_fen(CMK_POSITION);
+    movement::get_king_moves(0);
     util::print_chessboard();
-    movement::get_moves(0);
-    // movement::get_moves(1);
-    // std::cout << state::moves.size();
-    util::print_pawn_moves(0);
+    util::print_moves(0);
     return 0;
 }

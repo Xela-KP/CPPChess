@@ -117,25 +117,63 @@ namespace movement
         }
     }
 
-    void get_bishop_moves(int color)
+    void get_king_moves(int color)
     {
-        int piece = color ? chess::b : chess::B;
-        U64 bishop_occupancy = state::piece_occupancies[piece];
-        while (bishop_occupancy)
+        int piece = color ? chess::k : chess::K;
+        U64 king_occupancy = state::piece_occupancies[piece];
+        int source_square = bitboard::pop_least_significant_bit(king_occupancy);
+        if (state::castle_privelage & chess::wk ||
+            state::castle_privelage & chess::bk &&
+                !get_num_attackers_on(source_square, color))
         {
-            int source_square = bitboard::pop_least_significant_bit(bishop_occupancy);
+            if (!bitboard::get_bit(state::side_occupancies[chess::BOTH], source_square + 1) &&
+                !bitboard::get_bit(state::side_occupancies[chess::BOTH], source_square + 2) &&
+                !get_num_attackers_on(source_square + 1, !color) &&
+                !get_num_attackers_on(source_square + 2, !color))
+                state::moves.push_back(encode_move(source_square, source_square + 2, piece, 0, 0, 0, 0, 1));
+            if (!bitboard::get_bit(state::side_occupancies[chess::BOTH], source_square - 1) &&
+                !bitboard::get_bit(state::side_occupancies[chess::BOTH], source_square - 2) &&
+                !bitboard::get_bit(state::side_occupancies[chess::BOTH], source_square - 3) &&
+                !get_num_attackers_on(source_square - 1, !color) &&
+                !get_num_attackers_on(source_square - 2, !color))
+                state::moves.push_back(encode_move(source_square, source_square - 2, piece, 0, 0, 0, 0, 1));
+        }
+        U64 king_attack_mask = state::king_attack_mask[source_square];
+        while (king_attack_mask)
+        {
+            int target_square = bitboard::pop_least_significant_bit(king_attack_mask);
+            if (!bitboard::get_bit(state::side_occupancies[color], target_square) &&
+                !get_num_attackers_on(target_square, !color))
+                state::moves.push_back(encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
         }
     }
 
-    void get_king_moves(int color)
-    {
-    }
+    // void get_bishop_moves(int color)
+    // {
+    //     int piece = color ? chess::b : chess::B;
+    //     U64 bishop_occupancy = state::piece_occupancies[piece];
+    //     while (bishop_occupancy)
+    //     {
+    //         int source_square = bitboard::pop_least_significant_bit(bishop_occupancy);
+    //     }
+    // }
+
+    // void get_rook_moves(int color)
+    // {
+    //     int piece = color ? chess::b : chess::B;
+    //     U64 bishop_occupancy = state::piece_occupancies[piece];
+    //     while (bishop_occupancy)
+    //     {
+    //         int source_square = bitboard::pop_least_significant_bit(bishop_occupancy);
+    //     }
+    // }
 
     void get_moves(int color)
     {
         state::moves.clear();
         U64 piece_occupancy;
-        get_pawn_moves(color);
+        // get_pawn_moves(color);
+        get_king_moves(color);
     }
 }
 /*

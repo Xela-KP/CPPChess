@@ -14,5 +14,9 @@ namespace movement
     static inline int decode_castle_flag(int move);
     int get_num_attackers_on(int color, int square);
     void get_pawn_moves(int color);
+    void get_king_moves(int color);
+    void get_bishop_moves(int color);
+    // void get_rook_moves(int color);
+    // void get_queen_moves(int color);
     void get_moves(int color);
 }
