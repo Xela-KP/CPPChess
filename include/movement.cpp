@@ -148,6 +148,25 @@ namespace movement
         }
     }
 
+    void get_knight_moves(int color)
+    {
+        int piece = color ? chess::n : chess::N;
+        U64 knight_occupancy = state::piece_occupancies[piece];
+        while (knight_occupancy)
+        {
+            int source_square = bitboard::pop_least_significant_bit(knight_occupancy);
+            U64 knight_attack_mask = state::knight_attack_mask[source_square];
+            while (knight_attack_mask)
+            {
+                int target_square = bitboard::pop_least_significant_bit(knight_attack_mask);
+                if (!bitboard::get_bit(state::side_occupancies[chess::BOTH], target_square))
+                    state::moves.push_back(encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
+                if (bitboard::get_bit(state::side_occupancies[!color], target_square))
+                    state::moves.push_back(encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
+            }
+        }
+    }
+
     // void get_bishop_moves(int color)
     // {
     //     int piece = color ? chess::b : chess::B;
