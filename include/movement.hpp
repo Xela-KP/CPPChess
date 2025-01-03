@@ -17,7 +17,7 @@ namespace movement
     void get_king_moves(int color);
     void get_knight_moves(int color);
     void get_bishop_moves(int color);
-    // void get_rook_moves(int color);
+    void get_rook_moves(int color);
     // void get_queen_moves(int color);
     void get_moves(int color);
 }

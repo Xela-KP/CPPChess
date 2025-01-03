@@ -187,15 +187,25 @@ namespace movement
         }
     }
 
-    // void get_rook_moves(int color)
-    // {
-    //     int piece = color ? chess::b : chess::B;
-    //     U64 bishop_occupancy = state::piece_occupancies[piece];
-    //     while (bishop_occupancy)
-    //     {
-    //         int source_square = bitboard::pop_least_significant_bit(bishop_occupancy);
-    //     }
-    // }
+    void get_rook_moves(int color)
+    {
+        int piece = color ? chess::r : chess::R;
+        U64 rook_occupancy = state::piece_occupancies[piece];
+        U64 current_occupancy = state::side_occupancies[chess::BOTH];
+        while (rook_occupancy)
+        {
+            int source_square = bitboard::pop_least_significant_bit(rook_occupancy);
+            U64 rook_attack_mask = state::rook_attack_mask[source_square][current_occupancy];
+            while (rook_attack_mask)
+            {
+                int target_square = bitboard::pop_least_significant_bit(rook_attack_mask);
+                if (!bitboard::get_bit(current_occupancy, target_square))
+                    state::moves.push_back(encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
+                if (bitboard::get_bit(state::side_occupancies[!color], target_square))
+                    state::moves.push_back(encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
+            }
+        }
+    }
 
     void get_moves(int color)
     {
