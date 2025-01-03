@@ -86,4 +86,28 @@ namespace util
         std::cout << "\n    a b c d e f g h\n";
         std::cout << "\n    attacks from: " << (color ? "black" : "white\n");
     };
+
+    void print_pawn_moves(int color)
+    {
+        for (int rank = 0; rank < DIMENSION; rank++)
+        {
+            std::cout << DIMENSION - rank << "   ";
+            for (int file = 0; file < DIMENSION; file++)
+            {
+                int square = rank * DIMENSION + file;
+                int target_square = -1;
+                for (int i = 0; i < state::moves.size(); i++)
+                {
+                    target_square = movement::decode_target_square(state::moves[i]);
+                    if (square == target_square)
+                        break;
+                    target_square = -1;
+                }
+                std::cout << (target_square >= 0 ? 'X' : '+') << ' ';
+            }
+            std::cout << ('\n');
+        }
+        std::cout << "\n    a b c d e f g h\n";
+        std::cout << "\n    moves for: " << (color ? "black" : "white\n");
+    }
 }
