@@ -1,5 +1,7 @@
 #pragma once
 #include "encodings.hpp"
+#include "bitboard.hpp"
+#include "types.hpp"
 #include <vector>
 namespace state
 {
