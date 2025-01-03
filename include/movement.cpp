@@ -222,7 +222,7 @@ namespace movement
                 if (!bitboard::get_bit(current_occupancy, target_square))
                     state::moves.push_back(encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
                 if (bitboard::get_bit(state::side_occupancies[!color], target_square))
-                    state::moves.push_back(encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0, 0));
+                    state::moves.push_back(encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
             }
         }
     }
