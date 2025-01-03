@@ -108,7 +108,7 @@ namespace mask
 
     static inline U64 get_queen_attack_mask(int square, U64 occupancy) { return get_bishop_attack_mask(square, occupancy) | get_rook_attack_mask(square, occupancy); }
 
-    U64 get_bishop_unblocked_attack_mask(int from_square)
+    static inline U64 get_bishop_unblocked_attack_mask(int from_square)
     {
         U64 attack_mask = 0ULL;
         int rank, file;
@@ -133,7 +133,7 @@ namespace mask
         return attack_mask;
     }
 
-    U64 get_bishop_blocked_attack_mask(int from_square, U64 occupancy)
+    static inline U64 get_bishop_blocked_attack_mask(int from_square, U64 occupancy)
     {
         U64 attack_mask = 0ULL;
         int rank, file;
@@ -176,7 +176,7 @@ namespace mask
         return attack_mask;
     }
 
-    U64 get_rook_unblocked_attack_mask(int from_square)
+    static inline U64 get_rook_unblocked_attack_mask(int from_square)
     {
         U64 attack_mask = 0ULL;
         int rank, file;
@@ -193,7 +193,7 @@ namespace mask
         return attack_mask;
     }
 
-    U64 get_rook_blocked_attack_mask(int from_square, U64 occupancy)
+    static inline U64 get_rook_blocked_attack_mask(int from_square, U64 occupancy)
     {
         U64 attack_mask = 0ULL;
         int rank, file;

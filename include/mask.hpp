@@ -14,10 +14,10 @@ namespace mask
     static inline U64 get_queen_attack_mask(int square, U64 occupancy);
     static inline U64 get_bishop_attack_mask(int square, U64 occupancy);
     static inline U64 get_rook_attack_mask(int square, U64 occupancy);
-    U64 get_bishop_unblocked_attack_mask(int from_square);
-    U64 get_bishop_blocked_attack_mask(int from_square, U64 occupancy);
-    U64 get_rook_unblocked_attack_mask(int from_square);
-    U64 get_rook_blocked_attack_mask(int from_square, U64 occupancy);
+    static inline U64 get_bishop_unblocked_attack_mask(int from_square);
+    static inline U64 get_bishop_blocked_attack_mask(int from_square, U64 occupancy);
+    static inline U64 get_rook_unblocked_attack_mask(int from_square);
+    static inline U64 get_rook_blocked_attack_mask(int from_square, U64 occupancy);
     void map_leap_attacks();
     void map_slide_attacks();
 }
