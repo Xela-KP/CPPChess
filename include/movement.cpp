@@ -175,7 +175,7 @@ namespace movement
         while (bishop_occupancy)
         {
             int source_square = bitboard::pop_least_significant_bit(bishop_occupancy);
-            U64 bishop_attack_mask = state::bishop_attack_mask[source_square][current_occupancy];
+            U64 bishop_attack_mask = mask::get_bishop_attack_mask(source_square, current_occupancy);
             while (bishop_attack_mask)
             {
                 int target_square = bitboard::pop_least_significant_bit(bishop_attack_mask);
@@ -195,7 +195,7 @@ namespace movement
         while (rook_occupancy)
         {
             int source_square = bitboard::pop_least_significant_bit(rook_occupancy);
-            U64 rook_attack_mask = state::rook_attack_mask[source_square][current_occupancy];
+            U64 rook_attack_mask = mask::get_rook_attack_mask(source_square, current_occupancy);
             while (rook_attack_mask)
             {
                 int target_square = bitboard::pop_least_significant_bit(rook_attack_mask);
@@ -215,7 +215,7 @@ namespace movement
         while (queen_occupancy)
         {
             int source_square = bitboard::pop_least_significant_bit(queen_occupancy);
-            U64 queen_attack_mask = state::queen_attack_mask[source_square][current_occupancy];
+            U64 queen_attack_mask = mask::get_queen_attack_mask(source_square, current_occupancy);
             while (queen_attack_mask)
             {
                 int target_square = bitboard::pop_least_significant_bit(queen_attack_mask);
