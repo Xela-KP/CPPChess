@@ -30,10 +30,11 @@ class MaskUtils
     static U64 rook_unblocked_attack_masks[BOARD_SIZE];
 
 private:
-    static void map_leap_attacks();
-    static void map_slide_attacks();
+    static void map_leap_attack_masks();
+    static void map_slide_attack_masks();
 
 public:
+    static void map_attack_masks();
     static U64 get_pawn_attack_mask(int side, int source_square);
     static U64 get_knight_attack_mask(int source_square);
     static U64 get_king_attack_mask(int source_square);

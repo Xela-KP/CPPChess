@@ -214,7 +214,7 @@ class MaskUtils
     static U64 rook_unblocked_attack_masks[BOARD_SIZE];
 
 private:
-    static void map_leap_attacks()
+    static void map_leap_attack_masks()
     {
         for (int from_square = chess::a8; from_square <= chess::h1; from_square++)
         {
@@ -228,7 +228,7 @@ private:
                 mask::evaluate_king_attack_mask(from_square);
         }
     }
-    static void map_slide_attacks()
+    static void map_slide_attack_masks()
     {
         for (int from_square = chess::a8; from_square <= chess::h1; from_square++)
         {
@@ -274,8 +274,8 @@ public:
     ~MaskUtils() = delete;
     static void map_attack_masks()
     {
-        map_leap_attacks();
-        map_slide_attacks();
+        map_leap_attack_masks();
+        map_slide_attack_masks();
     }
     static U64 get_pawn_attack_mask(int side, int source_square) { return pawn_attack_masks[side][source_square]; }
     static U64 get_knight_attack_mask(int source_square) { return knight_attack_masks[source_square]; }
