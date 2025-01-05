@@ -1,14 +1,9 @@
 #include "../include/gamestate.hpp"
 #include "../include/encodings.hpp"
 #include "../include/bitboard.hpp"
+#include "../include/movement.hpp"
 #include "../include/fen.hpp"
-GameState::GameState()
-{
-    parse_fen(START_POSITION);
-    color = chess::WHITE;
-    enpassant_square = chess::NO_SQUARE;
-    castle_privelage = chess::NO_CASTLE;
-}
+GameState::GameState() { parse_fen(START_POSITION); }
 int GameState::get_color() { return color; }
 int GameState::get_enpassant_square() { return enpassant_square; }
 int GameState::get_castle_privelage() { return castle_privelage; }
@@ -95,4 +90,5 @@ void GameState::parse_fen(std::string fen)
         color_occupancies[chess::BLACK] |= piece_occupancies[piece];
     color_occupancies[chess::BOTH] |= color_occupancies[chess::WHITE];
     color_occupancies[chess::BOTH] |= color_occupancies[chess::BLACK];
+    movement::get_moves(*this, color);
 }

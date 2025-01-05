@@ -40,7 +40,7 @@ int movement::get_num_attackers_on(GameState gamestate, int square, int color)
             : 0;
     return num_attackers;
 }
-void movement::get_pawn_moves(GameState gamestate, int color)
+void movement::get_pawn_moves(GameState &gamestate, int color)
 {
     int piece = color ? chess::p : chess::P;
     U64 pawn_occupancy = gamestate.get_piece_occupancy(piece);
@@ -92,7 +92,7 @@ void movement::get_pawn_moves(GameState gamestate, int color)
         }
     }
 }
-void movement::get_king_moves(GameState gamestate, int color)
+void movement::get_king_moves(GameState &gamestate, int color)
 {
     int piece = color ? chess::k : chess::K;
     U64 king_occupancy = gamestate.get_piece_occupancy(piece);
@@ -122,7 +122,7 @@ void movement::get_king_moves(GameState gamestate, int color)
             gamestate.push_move(encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
     }
 }
-void movement::get_knight_moves(GameState gamestate, int color)
+void movement::get_knight_moves(GameState &gamestate, int color)
 {
     int piece = color ? chess::n : chess::N;
     U64 knight_occupancy = gamestate.get_piece_occupancy(piece);
@@ -140,7 +140,7 @@ void movement::get_knight_moves(GameState gamestate, int color)
         }
     }
 }
-void movement::get_bishop_moves(GameState gamestate, int color)
+void movement::get_bishop_moves(GameState &gamestate, int color)
 {
     int piece = color ? chess::b : chess::B;
     U64 bishop_occupancy = gamestate.get_piece_occupancy(piece);
@@ -159,7 +159,7 @@ void movement::get_bishop_moves(GameState gamestate, int color)
         }
     }
 }
-void movement::get_rook_moves(GameState gamestate, int color)
+void movement::get_rook_moves(GameState &gamestate, int color)
 {
     int piece = color ? chess::r : chess::R;
     U64 rook_occupancy = gamestate.get_piece_occupancy(piece);
@@ -178,7 +178,7 @@ void movement::get_rook_moves(GameState gamestate, int color)
         }
     }
 }
-void movement::get_queen_moves(GameState gamestate, int color)
+void movement::get_queen_moves(GameState &gamestate, int color)
 {
     int piece = color ? chess::q : chess::Q;
     U64 queen_occupancy = gamestate.get_piece_occupancy(piece);
@@ -197,7 +197,7 @@ void movement::get_queen_moves(GameState gamestate, int color)
         }
     }
 }
-void movement::get_moves(GameState gamestate, int color)
+void movement::get_moves(GameState &gamestate, int color)
 {
     gamestate.clear_moves();
     get_pawn_moves(gamestate, color);
