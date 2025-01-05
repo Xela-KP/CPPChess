@@ -1,12 +1,12 @@
 #include "../include/game.hpp"
 #include "../include/mask.hpp"
 
-Game::Game() : gamestate(GameState())
+Game::Game()
 {
     MaskUtils::map_attack_masks();
-    history.push(gamestate);
+    push_state(gamestate);
 }
-GameState Game::get_state() { return history.top(); }
+GameState Game::get_state() { return gamestate; }
 GameState Game::pop_state()
 {
     GameState popped_state = history.top();
@@ -14,4 +14,4 @@ GameState Game::pop_state()
     return popped_state;
 }
 void Game::push_state(GameState gamestate) { history.push(gamestate); }
-void Game::undo() { gamestate = pop_state(); }
+void Game::undo() {}
