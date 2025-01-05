@@ -25,7 +25,7 @@ public:
     int get_enpassant_square() { return enpassant_square; }
     int get_castle_privelage() { return castle_privelage; }
     U64 get_piece_occupancy(int piece) { return piece_occupancies[piece]; }
-    U64 get_color_occupancies(int color) { return color_occupancies[color]; }
+    U64 get_color_occupancy(int color) { return color_occupancies[color]; }
     std::vector<int> get_moves() { return moves; }
     void parse_fen(std::string fen)
     {

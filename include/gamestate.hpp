@@ -19,7 +19,7 @@ public:
     int get_enpassant_square();
     int get_castle_privelage();
     U64 get_piece_occupancy(int piece);
-    U64 get_color_occupancies(int color);
+    U64 get_color_occupancy(int color);
     std::vector<int> get_moves();
     void parse_fen(std::string fen);
 };
