@@ -1,11 +1,11 @@
 #pragma once
 #include "types.hpp"
-#include "encodings.hpp"
+#include "gamestate.hpp"
 namespace util
 {
     void print_bitboard(U64 bitboard);
-    void print_piece_chessboard(chess::Piece piece);
-    void print_chessboard();
-    void print_attacked_squares(int color);
-    void print_moves(int color);
+    void print_piece_chessboard(GameState gamestate, int piece);
+    void print_chessboard(GameState gamestate);
+    void print_attacked_squares(GameState gamestate, int color);
+    void print_moves(GameState gamestate, int color);
 }

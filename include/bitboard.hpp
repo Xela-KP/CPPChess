@@ -6,7 +6,7 @@
 #define get_bit_count(bitboard) (__builtin_popcountll((bitboard)))
 namespace bitboard
 {
-    inline bool get_bit(U64 &bitboard, int square) { return (bitboard & 1ULL << (square)) != 0; }
+    inline bool get_bit(U64 bitboard, int square) { return (bitboard & 1ULL << (square)) != 0; }
     inline void set_bit(U64 &bitboard, int square) { bitboard |= (1ULL << square); }
     inline void clear_bit(U64 &bitboard, int square) { bitboard &= ~(1ULL << square); }
     inline int pop_least_significant_bit(U64 &bitboard)

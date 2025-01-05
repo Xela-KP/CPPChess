@@ -1,15 +1,10 @@
 #include <iostream>
-#include "../include/mask.cpp"
-#include "../include/util.cpp"
-#include "../include/fen.cpp"
-#include "../include/movement.cpp"
+#include "../include/util.hpp"
+#include "../include/game.hpp"
+#include "../include/encodings.hpp"
 int main()
 {
-    mask::map_slide_attacks();
-    mask::map_leap_attacks();
-    fen::parse_fen(TRICKY_POSITION);
-    movement::get_moves(0);
-    util::print_chessboard();
-    util::print_moves(0);
+    Game game = Game();
+    util::print_bitboard(game.get_state().get_color_occupancy(chess::BOTH));
     return 0;
 }
