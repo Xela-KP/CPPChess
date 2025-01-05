@@ -6,6 +6,12 @@
 int main()
 {
     Game game;
-    util::print_bitboard(game.get_state().get_color_occupancy(chess::BOTH));
+    game.get_state()->parse_fen(TRICKY_POSITION);
+    game.set_state(*game.get_state());
+    game.get_state()->parse_fen(CMK_POSITION);
+    game.set_state(*game.get_state());
+    util::print_bitboard(game.pop_state().get_color_occupancy(chess::BOTH));
+    util::print_bitboard(game.pop_state().get_color_occupancy(chess::BOTH));
+    util::print_bitboard(game.pop_state().get_color_occupancy(chess::BOTH));
     return 0;
 }
