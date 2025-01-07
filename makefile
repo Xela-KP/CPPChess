@@ -3,6 +3,7 @@ SRC_DIR = src
 INCLUDE_DIR = ./include
 CXX = clang++
 CXXFLAGS = -std=c++23 -I$(INCLUDE_DIR)
+CXXFLAGS += -Wno-c99-designator
 $(shell mkdir -p $(OBJ_DIR))
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)

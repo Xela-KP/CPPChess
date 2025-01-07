@@ -20,8 +20,6 @@ void GameState::push_move(int move) { moves.push_back(move); }
 void GameState::clear_moves() { moves.clear(); }
 void GameState::parse_fen(std::string fen)
 {
-    memset(piece_occupancies, 0ULL, sizeof(piece_occupancies));
-    memset(color_occupancies, 0ULL, sizeof(color_occupancies));
     color = chess::WHITE;
     enpassant_square = chess::NO_SQUARE;
     castle_privelage = chess::NO_CASTLE;
