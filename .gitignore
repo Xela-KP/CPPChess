@@ -2,4 +2,5 @@
 *.swp
 .vscode
 main
-build
+main.exe
+build/
