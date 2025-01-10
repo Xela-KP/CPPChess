@@ -1,6 +1,5 @@
 #include <algorithm>
 #include "../include/board.hpp"
-std::vector<int> moves;
 Board::Board(std::string fen)
 {
     enpassant_square = ChessEncoding::NO_SQUARE;
@@ -8,6 +7,7 @@ Board::Board(std::string fen)
     sideToMove = 0;
     parseFEN(fen);
 }
+Board Board::copy() { return *this; };
 Bitboard Board::getPieceOccupancy(int piece) { return piece_occupancies[piece]; }
 Bitboard Board::getColorOccupancy(int color) { return color_occupancies[color]; }
 int Board::getSideToMove() { return sideToMove; }

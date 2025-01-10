@@ -15,6 +15,7 @@ class Board
 
 public:
     Board(std::string fen = FEN::START_POSITION);
+    Board copy();
     Bitboard getPieceOccupancy(int piece);
     Bitboard getColorOccupancy(int color);
     int getSideToMove();
