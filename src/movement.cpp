@@ -5,40 +5,33 @@
 #include "../include/mask.hpp"
 #include "../include/bitboard.hpp"
 
-int movement::get_num_attackers_on(GameState gamestate, int square, int color)
+int movement::is_attacked(GameState gamestate, int square, int color)
 {
-    int num_attackers = 0;
-    num_attackers +=
-        (MaskUtils::get_pawn_attack_mask(!color, square) &
-         gamestate.get_piece_occupancy(color ? chess::p : chess::P))
-            ? 1
-            : 0;
-    num_attackers +=
-        (MaskUtils::get_knight_attack_mask(square) &
-         gamestate.get_piece_occupancy(color ? chess::n : chess::N))
-            ? 1
-            : 0;
-    num_attackers +=
-        (MaskUtils::get_king_attack_mask(square) &
-         gamestate.get_piece_occupancy(color ? chess::k : chess::K))
-            ? 1
-            : 0;
-    num_attackers +=
-        (MaskUtils::get_bishop_attack_mask(square, gamestate.get_color_occupancy(chess::BOTH)) &
-         gamestate.get_piece_occupancy(color ? chess::b : chess::B))
-            ? 1
-            : 0;
-    num_attackers +=
-        (MaskUtils::get_rook_attack_mask(square, gamestate.get_color_occupancy(chess::BOTH)) &
-         gamestate.get_piece_occupancy(color ? chess::r : chess::R))
-            ? 1
-            : 0;
-    num_attackers +=
-        (MaskUtils::get_queen_attack_mask(square, gamestate.get_color_occupancy(chess::BOTH)) &
-         gamestate.get_piece_occupancy(color ? chess::q : chess::Q))
-            ? 1
-            : 0;
-    return num_attackers;
+    U64 pawn_attack_mask = MaskUtils::get_pawn_attack_mask(!color, square);
+    U64 knight_attack_mask = MaskUtils::get_knight_attack_mask(square);
+    U64 king_attack_mask = MaskUtils::get_king_attack_mask(square);
+    U64 bishop_attack_mask = MaskUtils::get_bishop_attack_mask(square, gamestate.get_color_occupancy(chess::BOTH));
+    U64 rook_attack_mask = MaskUtils::get_rook_attack_mask(square, gamestate.get_color_occupancy(chess::BOTH));
+    U64 queen_attack_mask = MaskUtils::get_queen_attack_mask(square, gamestate.get_color_occupancy(chess::BOTH));
+    if (pawn_attack_mask &
+        gamestate.get_piece_occupancy(color ? chess::p : chess::P))
+        return 1;
+    if (knight_attack_mask &
+        gamestate.get_piece_occupancy(color ? chess::n : chess::N))
+        return 1;
+    if (king_attack_mask &
+        gamestate.get_piece_occupancy(color ? chess::k : chess::K))
+        return 1;
+    if (bishop_attack_mask &
+        gamestate.get_piece_occupancy(color ? chess::b : chess::B))
+        return 1;
+    if (rook_attack_mask &
+        gamestate.get_piece_occupancy(color ? chess::r : chess::R))
+        return 1;
+    if (queen_attack_mask &
+        gamestate.get_piece_occupancy(color ? chess::q : chess::Q))
+        return 1;
+    return 0;
 }
 void movement::get_pawn_moves(GameState &gamestate, int color)
 {
@@ -99,18 +92,18 @@ void movement::get_king_moves(GameState &gamestate, int color)
     int source_square = bitboard::pop_least_significant_bit(king_occupancy);
     if (gamestate.get_castle_privelage() & chess::wk ||
         gamestate.get_castle_privelage() & chess::bk &&
-            !get_num_attackers_on(gamestate, source_square, color))
+            !is_attacked(gamestate, source_square, color))
     {
         if (!bitboard::get_bit(gamestate.get_color_occupancy(chess::BOTH), source_square + 1) &&
             !bitboard::get_bit(gamestate.get_color_occupancy(chess::BOTH), source_square + 2) &&
-            !get_num_attackers_on(gamestate, source_square + 1, !color) &&
-            !get_num_attackers_on(gamestate, source_square + 2, !color))
+            !is_attacked(gamestate, source_square + 1, !color) &&
+            !is_attacked(gamestate, source_square + 2, !color))
             gamestate.push_move(encode_move(source_square, source_square + 2, piece, 0, 0, 0, 0, 1));
         if (!bitboard::get_bit(gamestate.get_color_occupancy(chess::BOTH), source_square - 1) &&
             !bitboard::get_bit(gamestate.get_color_occupancy(chess::BOTH), source_square - 2) &&
             !bitboard::get_bit(gamestate.get_color_occupancy(chess::BOTH), source_square - 3) &&
-            !get_num_attackers_on(gamestate, source_square - 1, !color) &&
-            !get_num_attackers_on(gamestate, source_square - 2, !color))
+            !is_attacked(gamestate, source_square - 1, !color) &&
+            !is_attacked(gamestate, source_square - 2, !color))
             gamestate.push_move(encode_move(source_square, source_square - 2, piece, 0, 0, 0, 0, 1));
     }
     U64 king_attack_mask = MaskUtils::get_king_attack_mask(source_square);
@@ -118,7 +111,7 @@ void movement::get_king_moves(GameState &gamestate, int color)
     {
         int target_square = bitboard::pop_least_significant_bit(king_attack_mask);
         if (!bitboard::get_bit(gamestate.get_color_occupancy(color), target_square) &&
-            !get_num_attackers_on(gamestate, target_square, !color))
+            !is_attacked(gamestate, target_square, !color))
             gamestate.push_move(encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
     }
 }

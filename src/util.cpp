@@ -75,7 +75,7 @@ void util::print_attacked_squares(GameState gamestate, int color)
         for (int file = 0; file < DIMENSION; file++)
         {
             int square = rank * DIMENSION + file;
-            std::cout << movement::get_num_attackers_on(gamestate, square, color) << ' ';
+            std::cout << movement::is_attacked(gamestate, square, color) << ' ';
         }
         std::cout << ('\n');
     }
