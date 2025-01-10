@@ -49,7 +49,7 @@ void Log::printChessboard(Board board)
                 if (BitboardUtils::getBit(board.getPieceOccupancy(piece), square))
                     ascii = ChessEncoding::ASCII_PIECES[piece];
             }
-            std::cout << (ascii < 0 ? '+' : ascii) << ' ';
+            std::cout << (ascii < 0 ? '.' : ascii) << ' ';
         }
         std::cout << ('\n');
     }
@@ -72,7 +72,7 @@ void Log::printAttackedSquares(Board board, int color)
         for (int file = 0; file < DIMENSION; file++)
         {
             int square = rank * DIMENSION + file;
-            std::cout << Movement::isAttacked(board, square, color) << ' ';
+            std::cout << (MovementUtils::isAttacked(board, square, color) ? 'x' : '.') << ' ';
         }
         std::cout << ('\n');
     }
@@ -90,12 +90,12 @@ void Log::printMoves(Board board, int color)
             int target_square = -1;
             for (int i = 0; i < board.getMoves().size(); i++)
             {
-                target_square = Movement::decodeTargetSquare(board.getMove(i));
+                target_square = MovementUtils::decodeTargetSquare(board.getMove(i));
                 if (square == target_square)
                     break;
                 target_square = -1;
             }
-            std::cout << (target_square >= 0 ? 'X' : '+') << ' ';
+            std::cout << (target_square >= 0 ? 'x' : '.') << ' ';
         }
         std::cout << ('\n');
     }

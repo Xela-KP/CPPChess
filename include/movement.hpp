@@ -1,6 +1,6 @@
 #pragma once
 #include "board.hpp"
-namespace Movement
+class MovementUtils
 {
     static inline int encodeMove(int source_square, int target_square, int piece,
                                  int promotion_piece, int is_capture,
@@ -16,19 +16,23 @@ namespace Movement
                 is_castle << 23);
     };
     static inline int decodeSourceSquare(int move) { return move & 0x3f; }
-    static inline int decodeTargetSquare(int move) { return (move & 0xfc0) >> 6; }
     static inline int decodePiece(int move) { return (move & 0xf000) >> 12; }
     static inline int decodePromotionPiece(int move) { return (move & 0xf0000) >> 16; }
     static inline int decodeCaptureFlag(int move) { return move & 0x100000; }
     static inline int decodeDoublePawnPushFlag(int move) { return move & 0x200000; }
     static inline int decodeEnpassantFlag(int move) { return move & 0x400000; }
     static inline int decodeCastleFlag(int move) { return move & 0x800000; }
-    int isAttacked(Board board, int square, int color);
-    void getPawnMoves(Board &board, int color);
-    void getKingMoves(Board &board, int color);
-    void getKnightMoves(Board &board, int color);
-    void getBishopMoves(Board &board, int color);
-    void getRookMoves(Board &board, int color);
-    void getQueenMoves(Board &board, int color);
-    void getMoves(Board &board, int color);
-}
+
+public:
+    // public for logging purposes
+    static inline int decodeTargetSquare(int move) { return (move & 0xfc0) >> 6; }
+
+    static int isAttacked(Board board, int square, int color);
+    static void mapPawnMoves(Board &board, int color);
+    static void mapKingMoves(Board &board, int color);
+    static void mapKnightMoves(Board &board, int color);
+    static void mapBishopMoves(Board &board, int color);
+    static void mapRookMoves(Board &board, int color);
+    static void mapQueenMoves(Board &board, int color);
+    static void mapMoves(Board &board, int color);
+};

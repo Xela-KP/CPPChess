@@ -1,6 +1,6 @@
 #include "../include/movement.hpp"
 #include "../include/mask.hpp"
-int Movement::isAttacked(Board board, int square, int color)
+int MovementUtils::isAttacked(Board board, int square, int color)
 {
     Bitboard pawn_attack_mask = AttackMaskUtils::getPawnAttackMask(!color, square);
     Bitboard knight_attack_mask = AttackMaskUtils::getKnightAttackMask(square);
@@ -28,7 +28,7 @@ int Movement::isAttacked(Board board, int square, int color)
         return 1;
     return 0;
 }
-void Movement::getPawnMoves(Board &board, int color)
+void MovementUtils::mapPawnMoves(Board &board, int color)
 {
     int piece = color ? ChessEncoding::p : ChessEncoding::P;
     Bitboard pawn_occupancy = board.getPieceOccupancy(piece);
@@ -80,7 +80,7 @@ void Movement::getPawnMoves(Board &board, int color)
         }
     }
 }
-void Movement::getKingMoves(Board &board, int color)
+void MovementUtils::mapKingMoves(Board &board, int color)
 {
     int piece = color ? ChessEncoding::k : ChessEncoding::K;
     Bitboard king_occupancy = board.getPieceOccupancy(piece);
@@ -110,7 +110,7 @@ void Movement::getKingMoves(Board &board, int color)
             board.pushMove(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
     }
 }
-void Movement::getKnightMoves(Board &board, int color)
+void MovementUtils::mapKnightMoves(Board &board, int color)
 {
     int piece = color ? ChessEncoding::n : ChessEncoding::N;
     Bitboard knight_occupancy = board.getPieceOccupancy(piece);
@@ -128,7 +128,7 @@ void Movement::getKnightMoves(Board &board, int color)
         }
     }
 }
-void Movement::getBishopMoves(Board &board, int color)
+void MovementUtils::mapBishopMoves(Board &board, int color)
 {
     int piece = color ? ChessEncoding::b : ChessEncoding::B;
     Bitboard bishop_occupancy = board.getPieceOccupancy(piece);
@@ -147,7 +147,7 @@ void Movement::getBishopMoves(Board &board, int color)
         }
     }
 }
-void Movement::getRookMoves(Board &board, int color)
+void MovementUtils::mapRookMoves(Board &board, int color)
 {
     int piece = color ? ChessEncoding::r : ChessEncoding::R;
     Bitboard rook_occupancy = board.getPieceOccupancy(piece);
@@ -166,7 +166,7 @@ void Movement::getRookMoves(Board &board, int color)
         }
     }
 }
-void Movement::getQueenMoves(Board &board, int color)
+void MovementUtils::mapQueenMoves(Board &board, int color)
 {
     int piece = color ? ChessEncoding::q : ChessEncoding::Q;
     Bitboard queen_occupancy = board.getPieceOccupancy(piece);
@@ -185,15 +185,15 @@ void Movement::getQueenMoves(Board &board, int color)
         }
     }
 }
-void Movement::getMoves(Board &board, int color)
+void MovementUtils::mapMoves(Board &board, int color)
 {
     board.clearMoves();
-    getPawnMoves(board, color);
-    getKingMoves(board, color);
-    getKnightMoves(board, color);
-    getBishopMoves(board, color);
-    getRookMoves(board, color);
-    getQueenMoves(board, color);
+    mapPawnMoves(board, color);
+    mapKingMoves(board, color);
+    mapKnightMoves(board, color);
+    mapBishopMoves(board, color);
+    mapRookMoves(board, color);
+    mapQueenMoves(board, color);
 }
 
 /*
