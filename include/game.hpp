@@ -9,8 +9,8 @@ class Game
 public:
     Game();
     GameState pop_state();
-    GameState *get_state();
+    GameState get_state();
     void push_state(GameState gamestate);
+    void update_state(GameState gamestate);
     void undo();
-    void set_state(GameState gamestate);
 };
