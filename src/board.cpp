@@ -92,8 +92,3 @@ void Board::parseFEN(std::string fen)
     color_occupancies[ChessEncoding::BOTH] |= color_occupancies[ChessEncoding::WHITE];
     color_occupancies[ChessEncoding::BOTH] |= color_occupancies[ChessEncoding::BLACK];
 }
-
-std::vector<int> Board::getMoves() { return moves; };
-int Board::getMove(int index) { return moves[index]; }
-void Board::pushMove(int move) { moves.push_back(move); };
-void Board::clearMoves() { moves.clear(); };

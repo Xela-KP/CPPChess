@@ -10,7 +10,6 @@ int main()
     std::vector<Board> history;
     AttackMaskUtils::mapAttackMasks();
     Board board(FEN::TRICKY_POSITION);
-    MovementUtils::mapMoves(board, color);
     history.push_back(board.copy());
     Log::printChessboard(board);
     Log::printMoves(board, color);

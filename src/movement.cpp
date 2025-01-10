@@ -28,8 +28,9 @@ int MovementUtils::isAttacked(Board board, int square, int color)
         return 1;
     return 0;
 }
-void MovementUtils::mapPawnMoves(Board &board, int color)
+std::vector<int> MovementUtils::getPawnMoves(Board board, int color)
 {
+    std::vector<int> moves;
     int piece = color ? ChessEncoding::p : ChessEncoding::P;
     Bitboard pawn_occupancy = board.getPieceOccupancy(piece);
     Bitboard current_occupancy = board.getColorOccupancy(ChessEncoding::BOTH);
@@ -45,16 +46,16 @@ void MovementUtils::mapPawnMoves(Board &board, int color)
             if ((color && source_square >= ChessEncoding::a7 && source_square <= ChessEncoding::h7 ||
                  !color && source_square >= ChessEncoding::a2 && source_square <= ChessEncoding::h2) &&
                 !(BitboardUtils::getBit(current_occupancy, double_push_target_square)))
-                board.pushMove(encodeMove(source_square, double_push_target_square, piece, 0, 0, 1, 0, 0));
+                moves.push_back(encodeMove(source_square, double_push_target_square, piece, 0, 0, 1, 0, 0));
             if ((color && (source_square >= ChessEncoding::a2 && source_square <= ChessEncoding::h2)) ||
                 (!color && (source_square >= ChessEncoding::a8 && source_square <= ChessEncoding::h8)))
             {
-                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::Q, 0, 0, 0, 0));
-                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::R, 0, 0, 0, 0));
-                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::B, 0, 0, 0, 0));
-                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::N, 0, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, ChessEncoding::Q, 0, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, ChessEncoding::R, 0, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, ChessEncoding::B, 0, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, ChessEncoding::N, 0, 0, 0, 0));
             }
-            board.pushMove(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
+            moves.push_back(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
         }
         while (pawn_attack_mask)
         {
@@ -62,13 +63,13 @@ void MovementUtils::mapPawnMoves(Board &board, int color)
             if ((color && (source_square >= ChessEncoding::a2 && source_square <= ChessEncoding::h2)) ||
                 (!color && (source_square >= ChessEncoding::a8 && source_square <= ChessEncoding::h8)))
             {
-                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::Q, 1, 0, 0, 0));
-                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::R, 1, 0, 0, 0));
-                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::B, 1, 0, 0, 0));
-                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::N, 1, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, ChessEncoding::Q, 1, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, ChessEncoding::R, 1, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, ChessEncoding::B, 1, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, ChessEncoding::N, 1, 0, 0, 0));
             }
             else
-                board.pushMove(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
         }
         if (!board.getEnpassantSquare())
             continue;
@@ -76,12 +77,14 @@ void MovementUtils::mapPawnMoves(Board &board, int color)
         if (enpassant_attack_mask)
         {
             target_square = BitboardUtils::getLSB(enpassant_attack_mask);
-            board.pushMove(encodeMove(source_square, target_square, piece, 0, 1, 0, 1, 0));
+            moves.push_back(encodeMove(source_square, target_square, piece, 0, 1, 0, 1, 0));
         }
     }
+    return moves;
 }
-void MovementUtils::mapKingMoves(Board &board, int color)
+std::vector<int> MovementUtils::getKingMoves(Board board, int color)
 {
+    std::vector<int> moves;
     int piece = color ? ChessEncoding::k : ChessEncoding::K;
     Bitboard king_occupancy = board.getPieceOccupancy(piece);
     int source_square = BitboardUtils::popLSB(king_occupancy);
@@ -93,13 +96,13 @@ void MovementUtils::mapKingMoves(Board &board, int color)
             !BitboardUtils::getBit(board.getColorOccupancy(ChessEncoding::BOTH), source_square + 2) &&
             !isAttacked(board, source_square + 1, !color) &&
             !isAttacked(board, source_square + 2, !color))
-            board.pushMove(encodeMove(source_square, source_square + 2, piece, 0, 0, 0, 0, 1));
+            moves.push_back(encodeMove(source_square, source_square + 2, piece, 0, 0, 0, 0, 1));
         if (!BitboardUtils::getBit(board.getColorOccupancy(ChessEncoding::BOTH), source_square - 1) &&
             !BitboardUtils::getBit(board.getColorOccupancy(ChessEncoding::BOTH), source_square - 2) &&
             !BitboardUtils::getBit(board.getColorOccupancy(ChessEncoding::BOTH), source_square - 3) &&
             !isAttacked(board, source_square - 1, !color) &&
             !isAttacked(board, source_square - 2, !color))
-            board.pushMove(encodeMove(source_square, source_square - 2, piece, 0, 0, 0, 0, 1));
+            moves.push_back(encodeMove(source_square, source_square - 2, piece, 0, 0, 0, 0, 1));
     }
     Bitboard king_attack_mask = AttackMaskUtils::getKingAttackMask(source_square);
     while (king_attack_mask)
@@ -107,11 +110,13 @@ void MovementUtils::mapKingMoves(Board &board, int color)
         int target_square = BitboardUtils::popLSB(king_attack_mask);
         if (!BitboardUtils::getBit(board.getColorOccupancy(color), target_square) &&
             !isAttacked(board, target_square, !color))
-            board.pushMove(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
+            moves.push_back(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
     }
+    return moves;
 }
-void MovementUtils::mapKnightMoves(Board &board, int color)
+std::vector<int> MovementUtils::getKnightMoves(Board board, int color)
 {
+    std::vector<int> moves;
     int piece = color ? ChessEncoding::n : ChessEncoding::N;
     Bitboard knight_occupancy = board.getPieceOccupancy(piece);
     while (knight_occupancy)
@@ -122,14 +127,16 @@ void MovementUtils::mapKnightMoves(Board &board, int color)
         {
             int target_square = BitboardUtils::popLSB(knight_attack_mask);
             if (!BitboardUtils::getBit(board.getColorOccupancy(ChessEncoding::BOTH), target_square))
-                board.pushMove(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
             if (BitboardUtils::getBit(board.getColorOccupancy(!color), target_square))
-                board.pushMove(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
         }
     }
+    return moves;
 }
-void MovementUtils::mapBishopMoves(Board &board, int color)
+std::vector<int> MovementUtils::getBishopMoves(Board board, int color)
 {
+    std::vector<int> moves;
     int piece = color ? ChessEncoding::b : ChessEncoding::B;
     Bitboard bishop_occupancy = board.getPieceOccupancy(piece);
     Bitboard current_occupancy = board.getColorOccupancy(ChessEncoding::BOTH);
@@ -141,14 +148,16 @@ void MovementUtils::mapBishopMoves(Board &board, int color)
         {
             int target_square = BitboardUtils::popLSB(bishop_attack_mask);
             if (!BitboardUtils::getBit(current_occupancy, target_square))
-                board.pushMove(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
             if (BitboardUtils::getBit(board.getColorOccupancy(!color), target_square))
-                board.pushMove(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
         }
     }
+    return moves;
 }
-void MovementUtils::mapRookMoves(Board &board, int color)
+std::vector<int> MovementUtils::getRookMoves(Board board, int color)
 {
+    std::vector<int> moves;
     int piece = color ? ChessEncoding::r : ChessEncoding::R;
     Bitboard rook_occupancy = board.getPieceOccupancy(piece);
     Bitboard current_occupancy = board.getColorOccupancy(ChessEncoding::BOTH);
@@ -160,14 +169,16 @@ void MovementUtils::mapRookMoves(Board &board, int color)
         {
             int target_square = BitboardUtils::popLSB(rook_attack_mask);
             if (!BitboardUtils::getBit(current_occupancy, target_square))
-                board.pushMove(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
             if (BitboardUtils::getBit(board.getColorOccupancy(!color), target_square))
-                board.pushMove(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
         }
     }
+    return moves;
 }
-void MovementUtils::mapQueenMoves(Board &board, int color)
+std::vector<int> MovementUtils::getQueenMoves(Board board, int color)
 {
+    std::vector<int> moves;
     int piece = color ? ChessEncoding::q : ChessEncoding::Q;
     Bitboard queen_occupancy = board.getPieceOccupancy(piece);
     Bitboard current_occupancy = board.getColorOccupancy(ChessEncoding::BOTH);
@@ -179,31 +190,25 @@ void MovementUtils::mapQueenMoves(Board &board, int color)
         {
             int target_square = BitboardUtils::popLSB(queen_attack_mask);
             if (!BitboardUtils::getBit(current_occupancy, target_square))
-                board.pushMove(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
             if (BitboardUtils::getBit(board.getColorOccupancy(!color), target_square))
-                board.pushMove(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
+                moves.push_back(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
         }
     }
+    return moves;
 }
-void MovementUtils::mapMoves(Board &board, int color)
+std::vector<int> MovementUtils::getMoves(Board board, int color)
 {
-    board.clearMoves();
-    mapPawnMoves(board, color);
-    mapKingMoves(board, color);
-    mapKnightMoves(board, color);
-    mapBishopMoves(board, color);
-    mapRookMoves(board, color);
-    mapQueenMoves(board, color);
+    std::vector<int> moves = getPawnMoves(board, color);
+    std::vector<int> king_moves = getKingMoves(board, color);
+    std::vector<int> knight_moves = getKnightMoves(board, color);
+    std::vector<int> bishop_moves = getBishopMoves(board, color);
+    std::vector<int> rook_moves = getRookMoves(board, color);
+    std::vector<int> queen_moves = getQueenMoves(board, color);
+    moves.insert(moves.end(), king_moves.begin(), king_moves.end());
+    moves.insert(moves.end(), knight_moves.begin(), knight_moves.end());
+    moves.insert(moves.end(), bishop_moves.begin(), bishop_moves.end());
+    moves.insert(moves.end(), rook_moves.begin(), rook_moves.end());
+    moves.insert(moves.end(), queen_moves.begin(), queen_moves.end());
+    return moves;
 }
-
-/*
-          binary move bits                               hexidecimal constants
-    0000 0000 0000 0000 0011 1111    source square       0x3f
-    0000 0000 0000 1111 1100 0000    target square       0xfc0
-    0000 0000 1111 0000 0000 0000    piece               0xf000
-    0000 1111 0000 0000 0000 0000    promoted piece      0xf0000
-    0001 0000 0000 0000 0000 0000    capture flag        0x100000
-    0010 0000 0000 0000 0000 0000    double push flag    0x200000
-    0100 0000 0000 0000 0000 0000    enpassant flag      0x400000
-    1000 0000 0000 0000 0000 0000    castling flag       0x800000
-*/

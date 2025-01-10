@@ -81,6 +81,7 @@ void Log::printAttackedSquares(Board board, int color)
 };
 void Log::printMoves(Board board, int color)
 {
+    std::vector<int> moves = MovementUtils::getMoves(board, color);
     for (int rank = 0; rank < DIMENSION; rank++)
     {
         std::cout << DIMENSION - rank << "   ";
@@ -88,9 +89,9 @@ void Log::printMoves(Board board, int color)
         {
             int square = rank * DIMENSION + file;
             int target_square = -1;
-            for (int i = 0; i < board.getMoves().size(); i++)
+            for (int i = 0; i < moves.size(); i++)
             {
-                target_square = MovementUtils::decodeTargetSquare(board.getMove(i));
+                target_square = MovementUtils::decodeTargetSquare(moves[i]);
                 if (square == target_square)
                     break;
                 target_square = -1;
