@@ -1,91 +1,96 @@
 #include <iostream>
 #include "../include/mask.hpp"
-#include "../include/magic.hpp"
 #include "../include/encodings.hpp"
-U64 MaskUtils::pawn_attack_masks[2][BOARD_SIZE];
-U64 MaskUtils::knight_attack_masks[BOARD_SIZE];
-U64 MaskUtils::king_attack_masks[BOARD_SIZE];
-U64 MaskUtils::bishop_attack_masks[BOARD_SIZE][4096];
-U64 MaskUtils::rook_attack_masks[BOARD_SIZE][4096];
-U64 MaskUtils::queen_attack_masks[BOARD_SIZE][4096];
-U64 MaskUtils::bishop_unblocked_attack_masks[BOARD_SIZE];
-U64 MaskUtils::rook_unblocked_attack_masks[BOARD_SIZE];
-void MaskUtils::map_leap_attack_masks()
+#include "../include/precalculate.hpp"
+#include "../include/magic.hpp"
+
+// Private Members
+Bitboard AttackMaskUtils::pawn_attack_masks[2][BOARD_SIZE];
+Bitboard AttackMaskUtils::knight_attack_masks[BOARD_SIZE];
+Bitboard AttackMaskUtils::king_attack_masks[BOARD_SIZE];
+Bitboard AttackMaskUtils::bishop_attack_masks[BOARD_SIZE][BOARD_SIZE * BOARD_SIZE];
+Bitboard AttackMaskUtils::rook_attack_masks[BOARD_SIZE][BOARD_SIZE * BOARD_SIZE];
+Bitboard AttackMaskUtils::queen_attack_masks[BOARD_SIZE][BOARD_SIZE * BOARD_SIZE];
+Bitboard AttackMaskUtils::bishop_raw_attack_masks[BOARD_SIZE];
+Bitboard AttackMaskUtils::rook_raw_attack_masks[BOARD_SIZE];
+void AttackMaskUtils::mapLeapAttackMasks()
 {
-    for (int from_square = chess::a8; from_square <= chess::h1; from_square++)
+    for (int source_square = ChessEncoding::a8; source_square <= ChessEncoding::h1; source_square++)
     {
-        pawn_attack_masks[chess::WHITE][from_square] =
-            mask::evaluate_pawn_attack_mask(chess::WHITE, from_square);
-        pawn_attack_masks[chess::BLACK][from_square] =
-            mask::evaluate_pawn_attack_mask(chess::BLACK, from_square);
-        knight_attack_masks[from_square] =
-            mask::evaluate_knight_attack_mask(from_square);
-        king_attack_masks[from_square] =
-            mask::evaluate_king_attack_mask(from_square);
+        pawn_attack_masks[ChessEncoding::WHITE][source_square] =
+            PreCalculate::evaluatePawnAttackMask(ChessEncoding::WHITE, source_square);
+        pawn_attack_masks[ChessEncoding::BLACK][source_square] =
+            PreCalculate::evaluatePawnAttackMask(ChessEncoding::BLACK, source_square);
+        knight_attack_masks[source_square] =
+            PreCalculate::evaluateKnightAttackMask(source_square);
+        king_attack_masks[source_square] =
+            PreCalculate::evaluateKingAttackMask(source_square);
     }
 }
-void MaskUtils::map_slide_attack_masks()
+void AttackMaskUtils::mapSlideAttackMasks()
 {
-    for (int from_square = chess::a8; from_square <= chess::h1; from_square++)
+    for (int source_square = ChessEncoding::a8; source_square <= ChessEncoding::h1; source_square++)
     {
-        bishop_unblocked_attack_masks[from_square] =
-            mask::evaluate_bishop_unblocked_attack_mask(from_square);
-        rook_unblocked_attack_masks[from_square] =
-            mask::evaluate_rook_unblocked_attack_mask(from_square);
-        U64 bishop_unblocked_mask = get_bishop_unblocked_attack_mask(from_square);
+        bishop_raw_attack_masks[source_square] =
+            PreCalculate::evaluateRawBishopAttackMask(source_square);
+        rook_raw_attack_masks[source_square] =
+            PreCalculate::evaluateRawRookAttackMask(source_square);
+        Bitboard bishop_unblocked_mask = getRawBishopAttackMask(source_square);
         for (int occupancy_index = 0;
-             occupancy_index < (1 << get_bit_count(bishop_unblocked_mask));
+             occupancy_index < (1 << BitboardUtils::getBitCount(bishop_unblocked_mask));
              occupancy_index++)
         {
-            U64 masked_occupancy =
-                mask::evaluate_masked_occupancy(occupancy_index, bishop_unblocked_mask);
+            Bitboard masked_occupancy =
+                PreCalculate::evaluateMaskedOccupancy(occupancy_index, bishop_unblocked_mask);
             int magic_index =
-                (masked_occupancy * magic::BISHOP_MAGIC_NUMBERS[from_square]) >>
-                (64 - magic::BISHOP_ATTACK_COUNT_MASK[from_square]);
-            bishop_attack_masks[from_square][magic_index] =
-                mask::evaluate_bishop_blocked_attack_mask(from_square, masked_occupancy);
-            queen_attack_masks[from_square][magic_index] |=
-                bishop_attack_masks[from_square][magic_index];
+                (masked_occupancy * Magic::BISHOP_MAGIC_NUMBERS[source_square]) >>
+                (64 - Magic::BISHOP_ATTACK_COUNT_MASK[source_square]);
+            bishop_attack_masks[source_square][magic_index] =
+                PreCalculate::evaluateBishopAttackMask(source_square, masked_occupancy);
+            queen_attack_masks[source_square][magic_index] |=
+                bishop_attack_masks[source_square][magic_index];
         }
-        U64 rook_unblocked_attack_mask = rook_unblocked_attack_masks[from_square];
+        Bitboard rook_unblocked_attack_mask = rook_raw_attack_masks[source_square];
         for (int occupancy_index = 0;
-             occupancy_index < (1 << get_bit_count(rook_unblocked_attack_mask));
+             occupancy_index < (1 << BitboardUtils::getBitCount(rook_unblocked_attack_mask));
              occupancy_index++)
         {
-            U64 masked_occupancy =
-                mask::evaluate_masked_occupancy(occupancy_index, rook_unblocked_attack_mask);
+            Bitboard masked_occupancy =
+                PreCalculate::evaluateMaskedOccupancy(occupancy_index, rook_unblocked_attack_mask);
             int magic_index =
-                (masked_occupancy * magic::ROOK_MAGIC_NUMBERS[from_square]) >>
-                (64 - magic::ROOK_ATTACK_COUNT_MASK[from_square]);
-            rook_attack_masks[from_square][magic_index] =
-                mask::evaluate_rook_blocked_attack_mask(from_square, masked_occupancy);
-            queen_attack_masks[from_square][magic_index] |=
-                rook_attack_masks[from_square][magic_index];
+                (masked_occupancy * Magic::ROOK_MAGIC_NUMBERS[source_square]) >>
+                (64 - Magic::ROOK_ATTACK_COUNT_MASK[source_square]);
+            rook_attack_masks[source_square][magic_index] =
+                PreCalculate::evaluateRookAttackMask(source_square, masked_occupancy);
+            queen_attack_masks[source_square][magic_index] |=
+                rook_attack_masks[source_square][magic_index];
         }
     }
 }
-void MaskUtils::map_attack_masks()
+Bitboard AttackMaskUtils::getRawBishopAttackMask(int source_square) { return bishop_raw_attack_masks[source_square]; }
+Bitboard AttackMaskUtils::getRawRookAttackMask(int source_square) { return rook_raw_attack_masks[source_square]; }
+
+// Public Members
+void AttackMaskUtils::mapAttackMasks()
 {
-    map_leap_attack_masks();
-    map_slide_attack_masks();
+    mapLeapAttackMasks();
+    mapSlideAttackMasks();
 }
-U64 MaskUtils::get_pawn_attack_mask(int side, int source_square) { return pawn_attack_masks[side][source_square]; }
-U64 MaskUtils::get_knight_attack_mask(int source_square) { return knight_attack_masks[source_square]; }
-U64 MaskUtils::get_king_attack_mask(int source_square) { return king_attack_masks[source_square]; }
-U64 MaskUtils::get_bishop_attack_mask(int source_square, U64 occupancy)
+Bitboard AttackMaskUtils::getPawnAttackMask(int side, int source_square) { return pawn_attack_masks[side][source_square]; }
+Bitboard AttackMaskUtils::getKnightAttackMask(int source_square) { return knight_attack_masks[source_square]; }
+Bitboard AttackMaskUtils::getKingAttackMask(int source_square) { return king_attack_masks[source_square]; }
+Bitboard AttackMaskUtils::getBishopAttackMask(int source_square, Bitboard occupancy)
 {
-    occupancy &= bishop_unblocked_attack_masks[source_square];
-    occupancy *= magic::BISHOP_MAGIC_NUMBERS[source_square];
-    occupancy >>= 64 - magic::BISHOP_ATTACK_COUNT_MASK[source_square];
+    occupancy &= bishop_raw_attack_masks[source_square];
+    occupancy *= Magic::BISHOP_MAGIC_NUMBERS[source_square];
+    occupancy >>= 64 - Magic::BISHOP_ATTACK_COUNT_MASK[source_square];
     return bishop_attack_masks[source_square][occupancy];
 }
-U64 MaskUtils::get_rook_attack_mask(int source_square, U64 occupancy)
+Bitboard AttackMaskUtils::getRookAttackMask(int source_square, Bitboard occupancy)
 {
-    occupancy &= rook_unblocked_attack_masks[source_square];
-    occupancy *= magic::ROOK_MAGIC_NUMBERS[source_square];
-    occupancy >>= 64 - magic::ROOK_ATTACK_COUNT_MASK[source_square];
+    occupancy &= rook_raw_attack_masks[source_square];
+    occupancy *= Magic::ROOK_MAGIC_NUMBERS[source_square];
+    occupancy >>= 64 - Magic::ROOK_ATTACK_COUNT_MASK[source_square];
     return rook_attack_masks[source_square][occupancy];
 };
-U64 MaskUtils::get_queen_attack_mask(int source_square, U64 occupancy) { return get_bishop_attack_mask(source_square, occupancy) | get_rook_attack_mask(source_square, occupancy); }
-U64 MaskUtils::get_bishop_unblocked_attack_mask(int source_square) { return bishop_unblocked_attack_masks[source_square]; }
-U64 MaskUtils::get_rook_unblocked_attack_mask(int source_square) { return rook_unblocked_attack_masks[source_square]; }
+Bitboard AttackMaskUtils::getQueenAttackMask(int source_square, Bitboard occupancy) { return getBishopAttackMask(source_square, occupancy) | getRookAttackMask(source_square, occupancy); }

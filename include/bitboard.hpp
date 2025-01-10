@@ -1,18 +1,17 @@
 #pragma once
-#include "types.hpp"
-#define DIMENSION 8
-#define BOARD_SIZE 64
-#define get_least_significant_bit(bitboard) (__builtin_ctzll((bitboard)))
-#define get_bit_count(bitboard) (__builtin_popcountll((bitboard)))
-namespace bitboard
+#include <cstdint>
+typedef unsigned long long Bitboard;
+constexpr int BOARD_SIZE = 64;
+constexpr int DIMENSION = 8;
+constexpr Bitboard EMPTY_BOARD = 0ULL;
+constexpr Bitboard FULL_BOARD = ~EMPTY_BOARD;
+namespace BitboardUtils
 {
-    inline bool get_bit(U64 bitboard, int square) { return (bitboard & 1ULL << (square)) != 0; }
-    inline void set_bit(U64 &bitboard, int square) { bitboard |= (1ULL << square); }
-    inline void clear_bit(U64 &bitboard, int square) { bitboard &= ~(1ULL << square); }
-    inline int pop_least_significant_bit(U64 &bitboard)
-    {
-        int i = get_least_significant_bit(bitboard);
-        bitboard &= bitboard - 1;
-        return i == 64 ? -1 : i;
-    }
+    int getLSB(Bitboard bitboard);
+    int getBitCount(Bitboard bitboard);
+    int getSquare(int rank, int file);
+    int popLSB(Bitboard &bitboard);
+    bool getBit(Bitboard bitboard, int square);
+    void setBit(Bitboard &bitboard, int square);
+    void clearBit(Bitboard &bitboard, int square);
 }

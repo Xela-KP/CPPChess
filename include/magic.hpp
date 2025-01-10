@@ -1,6 +1,7 @@
+
 #pragma once
-#include "types.hpp"
-namespace magic
+#include "bitboard.hpp"
+namespace Magic
 {
     const int BISHOP_ATTACK_COUNT_MASK[64] = {
         6, 5, 5, 5, 5, 5, 5, 6,
@@ -20,7 +21,7 @@ namespace magic
         11, 10, 10, 10, 10, 10, 10, 11,
         11, 10, 10, 10, 10, 10, 10, 11,
         12, 11, 11, 11, 11, 11, 11, 12};
-    const U64 ROOK_MAGIC_NUMBERS[64] = {
+    const Bitboard ROOK_MAGIC_NUMBERS[64] = {
         0x8a80104000800020ULL,
         0x140002000100040ULL,
         0x2801880a0017001ULL,
@@ -85,7 +86,7 @@ namespace magic
         0x12001008414402ULL,
         0x2006104900a0804ULL,
         0x1004081002402ULL};
-    const U64 BISHOP_MAGIC_NUMBERS[64] = {
+    const Bitboard BISHOP_MAGIC_NUMBERS[64] = {
         0x40040844404084ULL,
         0x2004208a004208ULL,
         0x10190041080202ULL,

@@ -1,5 +1,6 @@
 #pragma once
-namespace chess
+#include <string>
+namespace ChessEncoding
 {
     enum Piece
     {

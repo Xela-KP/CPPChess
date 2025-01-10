@@ -1,204 +1,199 @@
-
 #include "../include/movement.hpp"
-#include "../include/types.hpp"
-#include "../include/encodings.hpp"
 #include "../include/mask.hpp"
-#include "../include/bitboard.hpp"
-
-int movement::is_attacked(GameState gamestate, int square, int color)
+int Movement::isAttacked(Board board, int square, int color)
 {
-    U64 pawn_attack_mask = MaskUtils::get_pawn_attack_mask(!color, square);
-    U64 knight_attack_mask = MaskUtils::get_knight_attack_mask(square);
-    U64 king_attack_mask = MaskUtils::get_king_attack_mask(square);
-    U64 bishop_attack_mask = MaskUtils::get_bishop_attack_mask(square, gamestate.get_color_occupancy(chess::BOTH));
-    U64 rook_attack_mask = MaskUtils::get_rook_attack_mask(square, gamestate.get_color_occupancy(chess::BOTH));
-    U64 queen_attack_mask = MaskUtils::get_queen_attack_mask(square, gamestate.get_color_occupancy(chess::BOTH));
+    Bitboard pawn_attack_mask = AttackMaskUtils::getPawnAttackMask(!color, square);
+    Bitboard knight_attack_mask = AttackMaskUtils::getKnightAttackMask(square);
+    Bitboard king_attack_mask = AttackMaskUtils::getKingAttackMask(square);
+    Bitboard bishop_attack_mask = AttackMaskUtils::getBishopAttackMask(square, board.getColorOccupancy(ChessEncoding::BOTH));
+    Bitboard rook_attack_mask = AttackMaskUtils::getRookAttackMask(square, board.getColorOccupancy(ChessEncoding::BOTH));
+    Bitboard queen_attack_mask = AttackMaskUtils::getQueenAttackMask(square, board.getColorOccupancy(ChessEncoding::BOTH));
     if (pawn_attack_mask &
-        gamestate.get_piece_occupancy(color ? chess::p : chess::P))
+        board.getPieceOccupancy(color ? ChessEncoding::p : ChessEncoding::P))
         return 1;
     if (knight_attack_mask &
-        gamestate.get_piece_occupancy(color ? chess::n : chess::N))
+        board.getPieceOccupancy(color ? ChessEncoding::n : ChessEncoding::N))
         return 1;
     if (king_attack_mask &
-        gamestate.get_piece_occupancy(color ? chess::k : chess::K))
+        board.getPieceOccupancy(color ? ChessEncoding::k : ChessEncoding::K))
         return 1;
     if (bishop_attack_mask &
-        gamestate.get_piece_occupancy(color ? chess::b : chess::B))
+        board.getPieceOccupancy(color ? ChessEncoding::b : ChessEncoding::B))
         return 1;
     if (rook_attack_mask &
-        gamestate.get_piece_occupancy(color ? chess::r : chess::R))
+        board.getPieceOccupancy(color ? ChessEncoding::r : ChessEncoding::R))
         return 1;
     if (queen_attack_mask &
-        gamestate.get_piece_occupancy(color ? chess::q : chess::Q))
+        board.getPieceOccupancy(color ? ChessEncoding::q : ChessEncoding::Q))
         return 1;
     return 0;
 }
-void movement::get_pawn_moves(GameState &gamestate, int color)
+void Movement::getPawnMoves(Board &board, int color)
 {
-    int piece = color ? chess::p : chess::P;
-    U64 pawn_occupancy = gamestate.get_piece_occupancy(piece);
-    U64 current_occupancy = gamestate.get_color_occupancy(chess::BOTH);
+    int piece = color ? ChessEncoding::p : ChessEncoding::P;
+    Bitboard pawn_occupancy = board.getPieceOccupancy(piece);
+    Bitboard current_occupancy = board.getColorOccupancy(ChessEncoding::BOTH);
     int direction = color ? 1 : -1;
     while (pawn_occupancy)
     {
-        int source_square = bitboard::pop_least_significant_bit(pawn_occupancy);
+        int source_square = BitboardUtils::popLSB(pawn_occupancy);
         int target_square = source_square + 8 * direction;
         int double_push_target_square = target_square + 8 * direction;
-        U64 pawn_attack_mask = MaskUtils::get_pawn_attack_mask(color, source_square) & gamestate.get_color_occupancy(!color);
-        if (!bitboard::get_bit(current_occupancy, target_square))
+        Bitboard pawn_attack_mask = AttackMaskUtils::getPawnAttackMask(color, source_square) & board.getColorOccupancy(!color);
+        if (!BitboardUtils::getBit(current_occupancy, target_square))
         {
-            if ((color && source_square >= chess::a7 && source_square <= chess::h7 ||
-                 !color && source_square >= chess::a2 && source_square <= chess::h2) &&
-                !(bitboard::get_bit(current_occupancy, double_push_target_square)))
-                gamestate.push_move(encode_move(source_square, double_push_target_square, piece, 0, 0, 1, 0, 0));
-            if ((color && (source_square >= chess::a2 && source_square <= chess::h2)) ||
-                (!color && (source_square >= chess::a8 && source_square <= chess::h8)))
+            if ((color && source_square >= ChessEncoding::a7 && source_square <= ChessEncoding::h7 ||
+                 !color && source_square >= ChessEncoding::a2 && source_square <= ChessEncoding::h2) &&
+                !(BitboardUtils::getBit(current_occupancy, double_push_target_square)))
+                board.pushMove(encodeMove(source_square, double_push_target_square, piece, 0, 0, 1, 0, 0));
+            if ((color && (source_square >= ChessEncoding::a2 && source_square <= ChessEncoding::h2)) ||
+                (!color && (source_square >= ChessEncoding::a8 && source_square <= ChessEncoding::h8)))
             {
-                gamestate.push_move(encode_move(source_square, target_square, piece, chess::Q, 0, 0, 0, 0));
-                gamestate.push_move(encode_move(source_square, target_square, piece, chess::R, 0, 0, 0, 0));
-                gamestate.push_move(encode_move(source_square, target_square, piece, chess::B, 0, 0, 0, 0));
-                gamestate.push_move(encode_move(source_square, target_square, piece, chess::N, 0, 0, 0, 0));
+                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::Q, 0, 0, 0, 0));
+                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::R, 0, 0, 0, 0));
+                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::B, 0, 0, 0, 0));
+                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::N, 0, 0, 0, 0));
             }
-            gamestate.push_move(encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
+            board.pushMove(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
         }
         while (pawn_attack_mask)
         {
-            target_square = bitboard::pop_least_significant_bit(pawn_attack_mask);
-            if ((color && (source_square >= chess::a2 && source_square <= chess::h2)) ||
-                (!color && (source_square >= chess::a8 && source_square <= chess::h8)))
+            target_square = BitboardUtils::popLSB(pawn_attack_mask);
+            if ((color && (source_square >= ChessEncoding::a2 && source_square <= ChessEncoding::h2)) ||
+                (!color && (source_square >= ChessEncoding::a8 && source_square <= ChessEncoding::h8)))
             {
-                gamestate.push_move(encode_move(source_square, target_square, piece, chess::Q, 1, 0, 0, 0));
-                gamestate.push_move(encode_move(source_square, target_square, piece, chess::R, 1, 0, 0, 0));
-                gamestate.push_move(encode_move(source_square, target_square, piece, chess::B, 1, 0, 0, 0));
-                gamestate.push_move(encode_move(source_square, target_square, piece, chess::N, 1, 0, 0, 0));
+                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::Q, 1, 0, 0, 0));
+                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::R, 1, 0, 0, 0));
+                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::B, 1, 0, 0, 0));
+                board.pushMove(encodeMove(source_square, target_square, piece, ChessEncoding::N, 1, 0, 0, 0));
             }
             else
-                gamestate.push_move(encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
+                board.pushMove(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
         }
-        if (!gamestate.get_enpassant_square())
+        if (!board.getEnpassantSquare())
             continue;
-        U64 enpassant_attack_mask = MaskUtils::get_pawn_attack_mask(color, source_square) & (1ULL << gamestate.get_enpassant_square());
+        Bitboard enpassant_attack_mask = AttackMaskUtils::getPawnAttackMask(color, source_square) & (1ULL << board.getEnpassantSquare());
         if (enpassant_attack_mask)
         {
-            target_square = get_least_significant_bit(enpassant_attack_mask);
-            gamestate.push_move(encode_move(source_square, target_square, piece, 0, 1, 0, 1, 0));
+            target_square = BitboardUtils::getLSB(enpassant_attack_mask);
+            board.pushMove(encodeMove(source_square, target_square, piece, 0, 1, 0, 1, 0));
         }
     }
 }
-void movement::get_king_moves(GameState &gamestate, int color)
+void Movement::getKingMoves(Board &board, int color)
 {
-    int piece = color ? chess::k : chess::K;
-    U64 king_occupancy = gamestate.get_piece_occupancy(piece);
-    int source_square = bitboard::pop_least_significant_bit(king_occupancy);
-    if (gamestate.get_castle_privelage() & chess::wk ||
-        gamestate.get_castle_privelage() & chess::bk &&
-            !is_attacked(gamestate, source_square, color))
+    int piece = color ? ChessEncoding::k : ChessEncoding::K;
+    Bitboard king_occupancy = board.getPieceOccupancy(piece);
+    int source_square = BitboardUtils::popLSB(king_occupancy);
+    if (board.getCastlePrivelage() & ChessEncoding::wk ||
+        board.getCastlePrivelage() & ChessEncoding::bk &&
+            !isAttacked(board, source_square, color))
     {
-        if (!bitboard::get_bit(gamestate.get_color_occupancy(chess::BOTH), source_square + 1) &&
-            !bitboard::get_bit(gamestate.get_color_occupancy(chess::BOTH), source_square + 2) &&
-            !is_attacked(gamestate, source_square + 1, !color) &&
-            !is_attacked(gamestate, source_square + 2, !color))
-            gamestate.push_move(encode_move(source_square, source_square + 2, piece, 0, 0, 0, 0, 1));
-        if (!bitboard::get_bit(gamestate.get_color_occupancy(chess::BOTH), source_square - 1) &&
-            !bitboard::get_bit(gamestate.get_color_occupancy(chess::BOTH), source_square - 2) &&
-            !bitboard::get_bit(gamestate.get_color_occupancy(chess::BOTH), source_square - 3) &&
-            !is_attacked(gamestate, source_square - 1, !color) &&
-            !is_attacked(gamestate, source_square - 2, !color))
-            gamestate.push_move(encode_move(source_square, source_square - 2, piece, 0, 0, 0, 0, 1));
+        if (!BitboardUtils::getBit(board.getColorOccupancy(ChessEncoding::BOTH), source_square + 1) &&
+            !BitboardUtils::getBit(board.getColorOccupancy(ChessEncoding::BOTH), source_square + 2) &&
+            !isAttacked(board, source_square + 1, !color) &&
+            !isAttacked(board, source_square + 2, !color))
+            board.pushMove(encodeMove(source_square, source_square + 2, piece, 0, 0, 0, 0, 1));
+        if (!BitboardUtils::getBit(board.getColorOccupancy(ChessEncoding::BOTH), source_square - 1) &&
+            !BitboardUtils::getBit(board.getColorOccupancy(ChessEncoding::BOTH), source_square - 2) &&
+            !BitboardUtils::getBit(board.getColorOccupancy(ChessEncoding::BOTH), source_square - 3) &&
+            !isAttacked(board, source_square - 1, !color) &&
+            !isAttacked(board, source_square - 2, !color))
+            board.pushMove(encodeMove(source_square, source_square - 2, piece, 0, 0, 0, 0, 1));
     }
-    U64 king_attack_mask = MaskUtils::get_king_attack_mask(source_square);
+    Bitboard king_attack_mask = AttackMaskUtils::getKingAttackMask(source_square);
     while (king_attack_mask)
     {
-        int target_square = bitboard::pop_least_significant_bit(king_attack_mask);
-        if (!bitboard::get_bit(gamestate.get_color_occupancy(color), target_square) &&
-            !is_attacked(gamestate, target_square, !color))
-            gamestate.push_move(encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
+        int target_square = BitboardUtils::popLSB(king_attack_mask);
+        if (!BitboardUtils::getBit(board.getColorOccupancy(color), target_square) &&
+            !isAttacked(board, target_square, !color))
+            board.pushMove(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
     }
 }
-void movement::get_knight_moves(GameState &gamestate, int color)
+void Movement::getKnightMoves(Board &board, int color)
 {
-    int piece = color ? chess::n : chess::N;
-    U64 knight_occupancy = gamestate.get_piece_occupancy(piece);
+    int piece = color ? ChessEncoding::n : ChessEncoding::N;
+    Bitboard knight_occupancy = board.getPieceOccupancy(piece);
     while (knight_occupancy)
     {
-        int source_square = bitboard::pop_least_significant_bit(knight_occupancy);
-        U64 knight_attack_mask = MaskUtils::get_knight_attack_mask(source_square);
+        int source_square = BitboardUtils::popLSB(knight_occupancy);
+        Bitboard knight_attack_mask = AttackMaskUtils::getKnightAttackMask(source_square);
         while (knight_attack_mask)
         {
-            int target_square = bitboard::pop_least_significant_bit(knight_attack_mask);
-            if (!bitboard::get_bit(gamestate.get_color_occupancy(chess::BOTH), target_square))
-                gamestate.push_move(encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
-            if (bitboard::get_bit(gamestate.get_color_occupancy(!color), target_square))
-                gamestate.push_move(encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
+            int target_square = BitboardUtils::popLSB(knight_attack_mask);
+            if (!BitboardUtils::getBit(board.getColorOccupancy(ChessEncoding::BOTH), target_square))
+                board.pushMove(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
+            if (BitboardUtils::getBit(board.getColorOccupancy(!color), target_square))
+                board.pushMove(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
         }
     }
 }
-void movement::get_bishop_moves(GameState &gamestate, int color)
+void Movement::getBishopMoves(Board &board, int color)
 {
-    int piece = color ? chess::b : chess::B;
-    U64 bishop_occupancy = gamestate.get_piece_occupancy(piece);
-    U64 current_occupancy = gamestate.get_color_occupancy(chess::BOTH);
+    int piece = color ? ChessEncoding::b : ChessEncoding::B;
+    Bitboard bishop_occupancy = board.getPieceOccupancy(piece);
+    Bitboard current_occupancy = board.getColorOccupancy(ChessEncoding::BOTH);
     while (bishop_occupancy)
     {
-        int source_square = bitboard::pop_least_significant_bit(bishop_occupancy);
-        U64 bishop_attack_mask = MaskUtils::get_bishop_attack_mask(source_square, current_occupancy);
+        int source_square = BitboardUtils::popLSB(bishop_occupancy);
+        Bitboard bishop_attack_mask = AttackMaskUtils::getBishopAttackMask(source_square, current_occupancy);
         while (bishop_attack_mask)
         {
-            int target_square = bitboard::pop_least_significant_bit(bishop_attack_mask);
-            if (!bitboard::get_bit(current_occupancy, target_square))
-                gamestate.push_move(encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
-            if (bitboard::get_bit(gamestate.get_color_occupancy(!color), target_square))
-                gamestate.push_move(encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
+            int target_square = BitboardUtils::popLSB(bishop_attack_mask);
+            if (!BitboardUtils::getBit(current_occupancy, target_square))
+                board.pushMove(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
+            if (BitboardUtils::getBit(board.getColorOccupancy(!color), target_square))
+                board.pushMove(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
         }
     }
 }
-void movement::get_rook_moves(GameState &gamestate, int color)
+void Movement::getRookMoves(Board &board, int color)
 {
-    int piece = color ? chess::r : chess::R;
-    U64 rook_occupancy = gamestate.get_piece_occupancy(piece);
-    U64 current_occupancy = gamestate.get_color_occupancy(chess::BOTH);
+    int piece = color ? ChessEncoding::r : ChessEncoding::R;
+    Bitboard rook_occupancy = board.getPieceOccupancy(piece);
+    Bitboard current_occupancy = board.getColorOccupancy(ChessEncoding::BOTH);
     while (rook_occupancy)
     {
-        int source_square = bitboard::pop_least_significant_bit(rook_occupancy);
-        U64 rook_attack_mask = MaskUtils::get_rook_attack_mask(source_square, current_occupancy);
+        int source_square = BitboardUtils::popLSB(rook_occupancy);
+        Bitboard rook_attack_mask = AttackMaskUtils::getRookAttackMask(source_square, current_occupancy);
         while (rook_attack_mask)
         {
-            int target_square = bitboard::pop_least_significant_bit(rook_attack_mask);
-            if (!bitboard::get_bit(current_occupancy, target_square))
-                gamestate.push_move(encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
-            if (bitboard::get_bit(gamestate.get_color_occupancy(!color), target_square))
-                gamestate.push_move(encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
+            int target_square = BitboardUtils::popLSB(rook_attack_mask);
+            if (!BitboardUtils::getBit(current_occupancy, target_square))
+                board.pushMove(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
+            if (BitboardUtils::getBit(board.getColorOccupancy(!color), target_square))
+                board.pushMove(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
         }
     }
 }
-void movement::get_queen_moves(GameState &gamestate, int color)
+void Movement::getQueenMoves(Board &board, int color)
 {
-    int piece = color ? chess::q : chess::Q;
-    U64 queen_occupancy = gamestate.get_piece_occupancy(piece);
-    U64 current_occupancy = gamestate.get_color_occupancy(chess::BOTH);
+    int piece = color ? ChessEncoding::q : ChessEncoding::Q;
+    Bitboard queen_occupancy = board.getPieceOccupancy(piece);
+    Bitboard current_occupancy = board.getColorOccupancy(ChessEncoding::BOTH);
     while (queen_occupancy)
     {
-        int source_square = bitboard::pop_least_significant_bit(queen_occupancy);
-        U64 queen_attack_mask = MaskUtils::get_queen_attack_mask(source_square, current_occupancy);
+        int source_square = BitboardUtils::popLSB(queen_occupancy);
+        Bitboard queen_attack_mask = AttackMaskUtils::getQueenAttackMask(source_square, current_occupancy);
         while (queen_attack_mask)
         {
-            int target_square = bitboard::pop_least_significant_bit(queen_attack_mask);
-            if (!bitboard::get_bit(current_occupancy, target_square))
-                gamestate.push_move(encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
-            if (bitboard::get_bit(gamestate.get_color_occupancy(!color), target_square))
-                gamestate.push_move(encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
+            int target_square = BitboardUtils::popLSB(queen_attack_mask);
+            if (!BitboardUtils::getBit(current_occupancy, target_square))
+                board.pushMove(encodeMove(source_square, target_square, piece, 0, 0, 0, 0, 0));
+            if (BitboardUtils::getBit(board.getColorOccupancy(!color), target_square))
+                board.pushMove(encodeMove(source_square, target_square, piece, 0, 1, 0, 0, 0));
         }
     }
 }
-void movement::get_moves(GameState &gamestate, int color)
+void Movement::getMoves(Board &board, int color)
 {
-    gamestate.clear_moves();
-    get_pawn_moves(gamestate, color);
-    get_king_moves(gamestate, color);
-    get_knight_moves(gamestate, color);
-    get_bishop_moves(gamestate, color);
-    get_rook_moves(gamestate, color);
-    get_queen_moves(gamestate, color);
+    board.clearMoves();
+    getPawnMoves(board, color);
+    getKingMoves(board, color);
+    getKnightMoves(board, color);
+    getBishopMoves(board, color);
+    getRookMoves(board, color);
+    getQueenMoves(board, color);
 }
 
 /*

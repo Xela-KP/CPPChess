@@ -1,14 +1,12 @@
 #include <iostream>
-#include "../include/util.hpp"
-#include "../include/game.hpp"
-#include "../include/encodings.hpp"
-#include "../include/fen.hpp"
 #include "../include/mask.hpp"
+#include "../include/logging.hpp"
 
 int main()
 {
-    MaskUtils::map_attack_masks();
-    GameState gs;
-    util::print_chessboard(gs);
+    AttackMaskUtils::mapAttackMasks();
+    Board b;
+    Log::printChessboard(b);
+    Log::printAttackedSquares(b, 0);
     return 0;
 }

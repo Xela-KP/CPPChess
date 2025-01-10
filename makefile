@@ -1,4 +1,4 @@
-OBJ_DIR = build/obj
+OBJ_DIR = build
 SRC_DIR = src
 INCLUDE_DIR = ./include
 CXX = clang++
