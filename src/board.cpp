@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "../include/board.hpp"
+
 Board::Board(std::string fen)
 {
     enpassant_square = ChessEncoding::NO_SQUARE;

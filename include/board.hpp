@@ -8,20 +8,20 @@ class Board
     Bitboard piece_occupancies[12];
     Bitboard color_occupancies[3];
     Bitboard zobrist_hash;
+    std::vector<int> moves;
     int enpassant_square;
     int castle_privelage;
     int sideToMove;
-    std::vector<int> moves;
 
 public:
     Board(std::string fen = FEN::START_POSITION);
     Board copy();
     Bitboard getPieceOccupancy(int piece);
     Bitboard getColorOccupancy(int color);
+    std::vector<int> getMoves();
     int getSideToMove();
     int getEnpassantSquare();
     int getCastlePrivelage();
-    std::vector<int> getMoves();
     int getMove(int i);
     void pushMove(int move);
     void clearMoves();
