@@ -3,6 +3,7 @@
 #include "../include/bitboard.hpp"
 #include "../include/movement.hpp"
 #include "../include/fen.hpp"
+#include <algorithm>
 GameState::GameState() { parse_fen(START_POSITION); }
 int GameState::get_color() { return color; }
 int GameState::get_enpassant_square() { return enpassant_square; }
