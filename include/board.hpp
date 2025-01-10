@@ -2,6 +2,7 @@
 #include <vector>
 #include "bitboard.hpp"
 #include "encodings.hpp"
+#include "FEN.hpp"
 class Board
 {
     Bitboard piece_occupancies[12];
@@ -13,7 +14,7 @@ class Board
     std::vector<int> moves;
 
 public:
-    Board();
+    Board(std::string fen = FEN::START_POSITION);
     Bitboard getPieceOccupancy(int piece);
     Bitboard getColorOccupancy(int color);
     int getSideToMove();
