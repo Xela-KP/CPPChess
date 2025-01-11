@@ -2,7 +2,7 @@
 #include <vector>
 #include "../include/mask.hpp"
 #include "../include/logging.hpp"
-#include "../include/movement.hpp"
+#include "../include/movegen.hpp"
 #include "../include/FEN.hpp"
 int main()
 {

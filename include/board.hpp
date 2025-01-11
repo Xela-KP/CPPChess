@@ -21,4 +21,6 @@ public:
     int getEnpassantSquare();
     int getCastlePrivelage();
     void parseFEN(std::string fen);
+    // TODO: Implement makeMove. Make sure Board is only ever handling things related to the state.
+    void makeMove(int move);
 };
