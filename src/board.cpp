@@ -1,6 +1,6 @@
 #include <algorithm>
 #include "../include/board.hpp"
-
+#include "../include/moveutils.hpp"
 Board::Board(std::string fen)
 {
     enpassant_square = ChessEncoding::NO_SQUARE;
@@ -91,4 +91,32 @@ void Board::parseFEN(std::string fen)
         color_occupancies[ChessEncoding::BLACK] |= piece_occupancies[piece];
     color_occupancies[ChessEncoding::BOTH] |= color_occupancies[ChessEncoding::WHITE];
     color_occupancies[ChessEncoding::BOTH] |= color_occupancies[ChessEncoding::BLACK];
+}
+void Board::makeMove(int move, int color)
+{
+    int source_square = MoveUtils::decodeSourceSquare(move);
+    int target_square = MoveUtils::decodeTargetSquare(move);
+    int piece = MoveUtils::decodePiece(move);
+    int promotion_piece = MoveUtils::decodePromotionPiece(move);
+    int is_capture = MoveUtils::decodeCaptureFlag(move);
+    int is_double_pawn_push = MoveUtils::decodeDoublePawnPushFlag(move);
+    int is_castle = MoveUtils::decodeCastleFlag(move);
+    int is_enpassant = MoveUtils::decodeEnpassantFlag(move);
+
+    if (is_capture)
+    {
+        int captured_piece = color ? ChessEncoding::P : ChessEncoding::p;
+        int last_piece = captured_piece + 6;
+        while (captured_piece < last_piece)
+        {
+            BitboardUtils::clearBit(piece_occupancies[captured_piece], target_square);
+            captured_piece++;
+        }
+        BitboardUtils::clearBit(color_occupancies[color], source_square);
+        BitboardUtils::clearBit(piece_occupancies[piece], source_square);
+        BitboardUtils::clearBit(color_occupancies[!color], target_square);
+
+        BitboardUtils::setBit(color_occupancies[color], target_square);
+        BitboardUtils::setBit(piece_occupancies[piece], target_square);
+    }
 }
