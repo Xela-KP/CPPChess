@@ -1,4 +1,4 @@
-#include "precalculate.hpp"
+#include "../include/precalculate.hpp"
 Bitboard PreCalculate::evaluateMaskedOccupancy(int occupancy_index, Bitboard attack_mask)
 {
     Bitboard occupancy = EMPTY_BOARD;
