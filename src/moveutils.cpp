@@ -12,6 +12,8 @@ int MoveUtils::encodeMove(int source_square, int target_square, int piece,
             is_enpassant << 22 |
             is_castle << 23);
 };
+
+int MoveUtils::decodeTargetSquare(int move) { return (move & 0xfc0) >> 6; }
 int MoveUtils::decodeSourceSquare(int move) { return move & 0x3f; }
 int MoveUtils::decodePiece(int move) { return (move & 0xf000) >> 12; }
 int MoveUtils::decodePromotionPiece(int move) { return (move & 0xf0000) >> 16; }

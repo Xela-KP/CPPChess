@@ -4,7 +4,6 @@ class MoveGen
 {
 public:
     // public for logging purposes
-    static inline int decodeTargetSquare(int move) { return (move & 0xfc0) >> 6; }
 
     static int isAttacked(Board board, int square, int color);
     static std::vector<int> getPawnMoves(Board board, int color);
