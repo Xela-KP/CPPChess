@@ -1,6 +1,7 @@
 #include <iostream>
 #include "../include/logging.hpp"
-#include "../include/movement.hpp"
+#include "../include/movegen.hpp"
+#include "../include/moveutils.hpp"
 
 void Log::printBitboard(Bitboard bitboard)
 {
@@ -72,7 +73,7 @@ void Log::printAttackedSquares(Board board, int color)
         for (int file = 0; file < DIMENSION; file++)
         {
             int square = rank * DIMENSION + file;
-            std::cout << (MovementUtils::isAttacked(board, square, color) ? 'x' : '.') << ' ';
+            std::cout << (MoveGen::isAttacked(board, square, color) ? 'x' : '.') << ' ';
         }
         std::cout << ('\n');
     }
@@ -81,7 +82,7 @@ void Log::printAttackedSquares(Board board, int color)
 };
 void Log::printMoves(Board board, int color)
 {
-    std::vector<int> moves = MovementUtils::getMoves(board, color);
+    std::vector<int> moves = MoveGen::getMoves(board, color);
     for (int rank = 0; rank < DIMENSION; rank++)
     {
         std::cout << DIMENSION - rank << "   ";
@@ -91,7 +92,7 @@ void Log::printMoves(Board board, int color)
             int target_square = -1;
             for (int i = 0; i < moves.size(); i++)
             {
-                target_square = MovementUtils::decodeTargetSquare(moves[i]);
+                target_square = MoveUtils::decodeTargetSquare(moves[i]);
                 if (square == target_square)
                     break;
                 target_square = -1;
@@ -103,3 +104,41 @@ void Log::printMoves(Board board, int color)
     std::cout << "\n    a b c d e f g h\n";
     std::cout << "\n    moves for: " << (color ? "black" : "white\n");
 }
+void Log::printMoveEncoding(int move)
+{
+    int source_square = MoveUtils::decodeSourceSquare(move);
+    int target_square = MoveUtils::decodeTargetSquare(move);
+    int piece = MoveUtils::decodePiece(move);
+    int promotion_piece = MoveUtils::decodePromotionPiece(move);
+    int is_capture = MoveUtils::decodeCaptureFlag(move);
+    int is_double_pawn_push = MoveUtils::decodeDoublePawnPushFlag(move);
+    int is_castle = MoveUtils::decodeCastleFlag(move);
+    int is_enpassant = MoveUtils::decodeEnpassantFlag(move);
+    std::cout << ChessEncoding::ASCII_PIECES[piece]
+              << ' '
+              << ChessEncoding::SQUARE_TO_ALGEBRAIC_NOTATION[source_square]
+              << ' '
+              << ChessEncoding::SQUARE_TO_ALGEBRAIC_NOTATION[target_square]
+              << "\nPromote: "
+              << promotion_piece
+              << "\nCapture: "
+              << (is_capture ? "Yes" : "No")
+              << "\nDPP: "
+              << (is_double_pawn_push ? "Yes" : "No")
+              << "\nCastle: "
+              << (is_castle ? "Yes" : "No")
+              << "\nEnpassant: "
+              << (is_enpassant ? "Yes" : "No")
+              << "\n\n";
+};
+void Log::printMovesEncoding(std::vector<int> moves)
+{
+    for (int i = 0; i < moves.size(); i++)
+    {
+        int move = moves[i];
+        std::cout << "\n\nMove: "
+                  << i
+                  << '\n';
+        printMoveEncoding(move);
+    }
+};

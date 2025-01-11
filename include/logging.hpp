@@ -8,4 +8,6 @@ namespace Log
     void printChessboard(Board board);
     void printAttackedSquares(Board board, int color);
     void printMoves(Board board, int color);
+    void printMoveEncoding(int move);
+    void printMovesEncoding(std::vector<int> moves);
 }
