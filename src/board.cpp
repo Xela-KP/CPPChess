@@ -105,18 +105,31 @@ void Board::makeMove(int move, int color)
 
     if (is_capture)
     {
-        int captured_piece = color ? ChessEncoding::P : ChessEncoding::p;
-        int last_piece = captured_piece + 6;
-        while (captured_piece < last_piece)
-        {
-            BitboardUtils::clearBit(piece_occupancies[captured_piece], target_square);
-            captured_piece++;
-        }
+
         BitboardUtils::clearBit(color_occupancies[color], source_square);
         BitboardUtils::clearBit(piece_occupancies[piece], source_square);
-        BitboardUtils::clearBit(color_occupancies[!color], target_square);
-
         BitboardUtils::setBit(color_occupancies[color], target_square);
         BitboardUtils::setBit(piece_occupancies[piece], target_square);
+        int captured_piece = color ? ChessEncoding::P : ChessEncoding::p;
+        if (is_enpassant && enpassant_square != ChessEncoding::NO_SQUARE)
+        {
+            /*
+                I don't know if redundancy exists:
+                In case of enpassant: target_square === enpassant_square.
+                Also: enpassant_square is not the square holding the captured pawn, it's the capturing_pawns intended destination.
+            */
+            BitboardUtils::clearBit(piece_occupancies[captured_piece], color ? enpassant_square - 8 : enpassant_square + 8);
+            BitboardUtils::clearBit(color_occupancies[!color], color ? enpassant_square - 8 : enpassant_square + 8);
+        }
+        else
+        {
+            int last_piece = captured_piece + 6;
+            while (captured_piece < last_piece)
+            {
+                BitboardUtils::clearBit(piece_occupancies[captured_piece], target_square);
+                captured_piece++;
+            }
+            BitboardUtils::clearBit(color_occupancies[!color], target_square);
+        }
     }
 }
