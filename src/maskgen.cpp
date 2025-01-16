@@ -1,5 +1,5 @@
-#include "../include/precalculate.hpp"
-Bitboard PreCalculate::evaluateMaskedOccupancy(int occupancy_index, Bitboard attack_mask)
+#include "../include/maskgen.hpp"
+Bitboard MaskGen::evaluateMaskedOccupancy(int occupancy_index, Bitboard attack_mask)
 {
     Bitboard occupancy = EMPTY_BOARD;
     int num_attacks = BitboardUtils::getBitCount(attack_mask);
@@ -13,7 +13,7 @@ Bitboard PreCalculate::evaluateMaskedOccupancy(int occupancy_index, Bitboard att
     }
     return occupancy;
 }
-Bitboard PreCalculate::evaluatePawnAttackMask(int color, int source_square)
+Bitboard MaskGen::evaluatePawnAttackMask(int color, int source_square)
 {
     Bitboard bitboard = EMPTY_BOARD;
     Bitboard attack_mask = EMPTY_BOARD;
@@ -34,7 +34,7 @@ Bitboard PreCalculate::evaluatePawnAttackMask(int color, int source_square)
     }
     return attack_mask;
 }
-Bitboard PreCalculate::evaluateKnightAttackMask(int source_square)
+Bitboard MaskGen::evaluateKnightAttackMask(int source_square)
 {
     Bitboard bitboard = EMPTY_BOARD;
     Bitboard attack_mask = EMPTY_BOARD;
@@ -57,7 +57,7 @@ Bitboard PreCalculate::evaluateKnightAttackMask(int source_square)
         attack_mask |= bitboard >> 17;
     return attack_mask;
 }
-Bitboard PreCalculate::evaluateKingAttackMask(int source_square)
+Bitboard MaskGen::evaluateKingAttackMask(int source_square)
 {
     Bitboard bitboard = EMPTY_BOARD;
     Bitboard attack_mask = EMPTY_BOARD;
@@ -80,7 +80,7 @@ Bitboard PreCalculate::evaluateKingAttackMask(int source_square)
         attack_mask |= bitboard >> 9;
     return attack_mask;
 }
-Bitboard PreCalculate::evaluateRawBishopAttackMask(int source_square)
+Bitboard MaskGen::evaluateRawBishopAttackMask(int source_square)
 {
     Bitboard attack_mask = EMPTY_BOARD;
     int rank, file;
@@ -104,7 +104,7 @@ Bitboard PreCalculate::evaluateRawBishopAttackMask(int source_square)
         attack_mask |= (1ULL << (rank * DIMENSION + file));
     return attack_mask;
 }
-Bitboard PreCalculate::evaluateBishopAttackMask(int source_square, Bitboard occupancy)
+Bitboard MaskGen::evaluateBishopAttackMask(int source_square, Bitboard occupancy)
 {
     Bitboard attack_mask = EMPTY_BOARD;
     int rank, file;
@@ -146,7 +146,7 @@ Bitboard PreCalculate::evaluateBishopAttackMask(int source_square, Bitboard occu
 
     return attack_mask;
 }
-Bitboard PreCalculate::evaluateRawRookAttackMask(int source_square)
+Bitboard MaskGen::evaluateRawRookAttackMask(int source_square)
 {
     Bitboard attack_mask = EMPTY_BOARD;
     int rank, file;
@@ -162,7 +162,7 @@ Bitboard PreCalculate::evaluateRawRookAttackMask(int source_square)
         attack_mask |= (1ULL << (target_rank * DIMENSION + file));
     return attack_mask;
 }
-Bitboard PreCalculate::evaluateRookAttackMask(int source_square, Bitboard occupancy)
+Bitboard MaskGen::evaluateRookAttackMask(int source_square, Bitboard occupancy)
 {
     Bitboard attack_mask = EMPTY_BOARD;
     int rank, file;

@@ -1,6 +1,6 @@
 #include "bitboard.hpp"
 
-class PreCalculate
+class MaskGen
 {
     static inline Bitboard NOT_A_FILE = 18374403900871474942ULL;
     static inline Bitboard NOT_H_FILE = 9187201950435737471ULL;

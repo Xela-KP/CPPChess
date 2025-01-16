@@ -9,11 +9,11 @@ Board::Board(std::string fen)
     parseFEN(fen);
 }
 Board Board::copy() { return *this; };
-Bitboard Board::getPieceOccupancy(int piece) { return piece_occupancies[piece]; }
-Bitboard Board::getColorOccupancy(int color) { return color_occupancies[color]; }
-int Board::getSideToMove() { return sideToMove; }
-int Board::getEnpassantSquare() { return enpassant_square; }
-int Board::getCastlePrivelage() { return castle_privelage; }
+Bitboard Board::getPieceOccupancy(int piece) const { return piece_occupancies[piece]; }
+Bitboard Board::getColorOccupancy(int color) const { return color_occupancies[color]; }
+int Board::getSideToMove() const { return sideToMove; }
+int Board::getEnpassantSquare() const { return enpassant_square; }
+int Board::getCastlePrivelage() const { return castle_privelage; }
 void Board::parseFEN(std::string fen)
 {
     std::fill(std::begin(piece_occupancies), std::end(piece_occupancies), 0ULL);
@@ -105,7 +105,6 @@ void Board::makeMove(int move, int color)
 
     if (is_capture)
     {
-
         BitboardUtils::clearBit(color_occupancies[color], source_square);
         BitboardUtils::clearBit(piece_occupancies[piece], source_square);
         BitboardUtils::setBit(color_occupancies[color], target_square);
@@ -132,4 +131,9 @@ void Board::makeMove(int move, int color)
             BitboardUtils::clearBit(color_occupancies[!color], target_square);
         }
     }
+}
+
+bool Board::isLegalPosition(Bitboard occupancy)
+{
+    return false;
 }

@@ -7,10 +7,8 @@
 int main()
 {
     int color = 0;
-    std::vector<Board> history;
     AttackMaskUtils::mapAttackMasks();
     Board board(FEN::KILLER_POSITION);
-    history.push_back(board.copy());
     Log::printChessboard(board);
     // Log::printMoves(board, color);
     // Log::printAttackedSquares(board, color);
