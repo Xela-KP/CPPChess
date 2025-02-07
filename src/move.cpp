@@ -20,12 +20,12 @@ int Move::Encode(int source_square, int target_square, int piece,
                 is_castle << 23);
     return encoding;
 }
-int Move::DecodeTargetSquare(Move move) const { return (move & 0xfc0) >> 6; }
-int Move::DecodeSourceSquare(Move move) const { return move & 0x3f; }
-int Move::DecodePiece(Move move) const { return (move & 0xf000) >> 12; }
-int Move::DecodePromotionPiece(Move move) const { return (move & 0xf0000) >> 16; }
-int Move::DecodeCaptureFlag(Move move) const { return move & 0x100000; }
-int Move::DecodeDoublePawnPushFlag(Move move) const { return move & 0x200000; }
-int Move::DecodeEnpassantFlag(Move move) const { return move & 0x400000; }
-int Move::DecodeCastleFlag(Move move) const { return move & 0x800000; }
+int Move::DecodeTargetSquare() const { return (encoding & 0xfc0) >> 6; }
+int Move::DecodeSourceSquare() const { return encoding & 0x3f; }
+int Move::DecodePiece() const { return (encoding & 0xf000) >> 12; }
+int Move::DecodePromotionPiece() const { return (encoding & 0xf0000) >> 16; }
+int Move::DecodeCaptureFlag() const { return encoding & 0x100000; }
+int Move::DecodeDoublePawnPushFlag() const { return encoding & 0x200000; }
+int Move::DecodeEnpassantFlag() const { return encoding & 0x400000; }
+int Move::DecodeCastleFlag() const { return encoding & 0x800000; }
 Move::operator int() const { return encoding; }
