@@ -71,6 +71,19 @@ Bitboard &Bitboard::operator>>=(int shift)
     return *this;
 }
 
+// Alternative Methods
+Bitboard &Bitboard::Set(int square)
+{
+    value |= (1ULL << square);
+    return *this;
+}
+
+Bitboard &Bitboard::Clear(int square)
+{
+    value &= ~(1ULL << square);
+    return *this;
+}
+
 int Bitboard::GetLsbIndex() const { return __builtin_ctzll(value); }
 
 int Bitboard::PopLsbIndex()

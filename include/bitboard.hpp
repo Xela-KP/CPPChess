@@ -42,6 +42,9 @@ public:
     inline Bitboard &operator<<=(int shift);
     inline Bitboard &operator>>=(int shift);
 
+    inline Bitboard &Set(int square);
+    inline Bitboard &Clear(int square);
+
     inline int GetLsbIndex() const;
     inline int PopLsbIndex();
 
