@@ -20,7 +20,7 @@ Bitboard::Bitboard() : value(0) {}
 Bitboard::Bitboard(uint64_t value) : value(value) {}
 Bitboard::operator uint64_t() const { return value; }
 
-bool Bitboard::operator[](int square) const { return (value & (1ULL << square)) != 0; }
+bool Bitboard::operator[](int square) const { return (value & (1ULL << square)) != 0; } // or (bitboard & 1ULL << (square)); ?
 Bitboard::BitProxy::BitProxy(Bitboard &bitbaord, int square) : bitboard(bitboard), square(square) {}
 Bitboard::BitProxy &Bitboard::BitProxy::operator=(bool value)
 {
@@ -72,6 +72,7 @@ Bitboard &Bitboard::operator>>=(int shift)
 }
 
 // Alternative Methods
+bool Bitboard::Test(int square) const { return this[square]; }
 Bitboard &Bitboard::Set(int square)
 {
     value |= (1ULL << square);

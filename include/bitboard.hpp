@@ -1,6 +1,9 @@
 #pragma once
 #include <bitset>
 #include <cstdint>
+
+// TODO: Decide if you want to name bit position INDEX or SQUARE.
+
 // typedef unsigned long long Bitboard;
 // constexpr int BOARD_SIZE = 64;
 // constexpr int DIMENSION = 8;
@@ -42,6 +45,7 @@ public:
     inline Bitboard &operator<<=(int shift);
     inline Bitboard &operator>>=(int shift);
 
+    inline bool Test(int square) const;
     inline Bitboard &Set(int square);
     inline Bitboard &Clear(int square);
 
