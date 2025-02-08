@@ -1,13 +1,15 @@
 #pragma once
-#include "bitboard.hpp"
-#include "board.hpp"
+
+#include "chess_board.hpp"
+#include "move.hpp"
+
 namespace Log
 {
-    void printBitboard(Bitboard bitboard);
-    void printPieceOccupancy(Board board, int piece);
-    void printChessboard(Board board);
-    void printAttackedSquares(Board board, int color);
-    void printMoves(Board board, int color);
-    void printMoveEncoding(int move);
-    void printMovesEncoding(std::vector<int> moves);
+    void PrintBitboard(Bitboard bitboard);
+    void PrintPieceOccupancy(ChessBoard chess_board, int piece);
+    void PrintChessBoard(ChessBoard chess_board);
+    void PrintAttackedSquares(ChessBoard chess_board, int color);
+    void PrintMoves(ChessBoard chess_board, int color);
+    void PrintMoveEncoding(Move move);
+    void PrintMovesEncoding(std::vector<Move> moves);
 }

@@ -1,18 +1,20 @@
 #pragma once
-#include "board.hpp"
+
+#include <vector>
+#include "chess_board.hpp"
+#include "move.hpp"
+
 class MoveGen
 {
 public:
-    // public for logging purposes
-
-    static int isAttacked(Board board, int square, int color);
-    static std::vector<int> getPawnMoves(Board board, int color);
-    static std::vector<int> getKingMoves(Board board, int color);
-    static std::vector<int> getKnightMoves(Board board, int color);
-    static std::vector<int> getBishopMoves(Board board, int color);
-    static std::vector<int> getRookMoves(Board board, int color);
-    static std::vector<int> getQueenMoves(Board board, int color);
-    static std::vector<int> getMoves(Board board, int color);
+    static bool IsAttacked(const ChessBoard chess_board, const int square, const int color);
+    static std::vector<Move> GetPawnMoves(const ChessBoard chess_board, const int color);
+    static std::vector<Move> GetKingMoves(const ChessBoard chess_board, const int color);
+    static std::vector<Move> GetKnightMoves(const ChessBoard chess_board, const int color);
+    static std::vector<Move> GetBishopMoves(const ChessBoard chess_board, const int color);
+    static std::vector<Move> GetRookMoves(const ChessBoard chess_board, const int color);
+    static std::vector<Move> GetQueenMoves(const ChessBoard chess_board, const int color);
+    static std::vector<Move> GetMoves(const ChessBoard chess_board, const int color);
 };
 
 /*

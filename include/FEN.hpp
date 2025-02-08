@@ -1,6 +1,8 @@
 #pragma once
+
 #include <string>
-namespace FEN
+
+namespace Fen
 {
     const std::string EMPTY_BOARD = "8/8/8/8/8/8/8/8 b - - ";
     const std::string START_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ";
