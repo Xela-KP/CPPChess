@@ -1,70 +1,94 @@
 #pragma once
-#include <bitset>
+
 #include <cstdint>
-
-// TODO: Decide if you want to name bit position INDEX or SQUARE.
-
-// typedef unsigned long long Bitboard;
-// constexpr int BOARD_SIZE = 64;
-// constexpr int DIMENSION = 8;
-// constexpr Bitboard EMPTY_BOARD = 0ULL;
-// constexpr Bitboard FULL_BOARD = ~EMPTY_BOARD;
-// namespace BitboardUtils
-// {
-//     int getLSB(Bitboard bitboard);
-//     int getBitCount(Bitboard bitboard);
-//     int getSquare(int rank, int file);
-//     int popLSB(Bitboard &bitboard);
-//     bool getBit(Bitboard bitboard, int square);
-//     void setBit(Bitboard &bitboard, int square);
-//     void clearBit(Bitboard &bitboard, int square);
-// }
 
 class Bitboard
 {
 public:
     Bitboard();
-    Bitboard(uint64_t value);
-    inline operator uint64_t() const;
-
-    class BitProxy;
-
-    inline bool operator[](int square) const;
-    inline BitProxy operator[](int square);
-
-    inline Bitboard operator&(const Bitboard &other) const;
-    inline Bitboard operator|(const Bitboard &other) const;
-    inline Bitboard operator^(const Bitboard &other) const;
-    inline Bitboard operator~() const;
-    inline Bitboard operator<<(int shift) const;
-    inline Bitboard operator>>(int shift) const;
-
-    inline Bitboard &operator&=(const Bitboard &other);
-    inline Bitboard &operator|=(const Bitboard &other);
-    inline Bitboard &operator^=(const Bitboard &other);
-    inline Bitboard &operator<<=(int shift);
-    inline Bitboard &operator>>=(int shift);
-
-    inline bool Test(int square) const;
-    inline Bitboard &Set(int square);
-    inline Bitboard &Clear(int square);
-
-    inline int GetLsbIndex() const;
-    inline int PopLsbIndex();
-
-    void print() const;
-
+    Bitboard(uint64_t ull);
     class BitProxy
     {
     public:
-        BitProxy(Bitboard &bb, int sq);
-        BitProxy &operator=(bool value);
-        operator bool() const;
+        BitProxy(Bitboard &bitboard, int square);
+        inline BitProxy &operator=(bool value)
+        {
+            value ? bitboard.value |= (1ULL << square) : bitboard.value &= ~(1ULL << square);
+            return *this;
+        };
+        inline operator bool() const { return (bitboard.value & (1ULL << square)); } // != 0ULL
+
     private:
         Bitboard &bitboard;
         int square;
     };
+    inline BitProxy operator[](const int square) { return BitProxy(*this, square); }
+    inline operator uint64_t() const { return value; }
+    inline bool operator[](int square) const { return (value & (1ULL << square)) != 0; } // or (bitboard & 1ULL << (square)); ?
+
+    inline Bitboard operator&(const uint64_t ull) const { return Bitboard(value & ull); }
+    inline Bitboard operator|(const uint64_t ull) const { return Bitboard(value | ull); }
+    inline Bitboard operator^(const uint64_t ull) const { return Bitboard(value ^ ull); }
+
+    inline Bitboard operator&(const Bitboard other) const { return Bitboard(value & other.value); }
+    inline Bitboard operator|(const Bitboard other) const { return Bitboard(value | other.value); }
+    inline Bitboard operator^(const Bitboard other) const { return Bitboard(value ^ other.value); }
+
+    inline Bitboard operator~() const { return Bitboard(~value); }
+    inline Bitboard operator<<(int shift) const { return Bitboard(value << shift); }
+    inline Bitboard operator>>(int shift) const { return Bitboard(value >> shift); }
+    inline Bitboard &operator&=(const Bitboard other)
+    {
+        value &= other.value;
+        return *this;
+    }
+    inline Bitboard &operator|=(const Bitboard other)
+    {
+        value |= other.value;
+        return *this;
+    }
+    inline Bitboard &operator^=(const Bitboard other)
+    {
+        value ^= other.value;
+        return *this;
+    }
+    inline Bitboard &operator<<=(int shift)
+    {
+        value <<= shift;
+        return *this;
+    }
+    inline Bitboard &operator>>=(int shift)
+    {
+        value >>= shift;
+        return *this;
+    }
+    inline Bitboard &operator*=(const Bitboard other)
+    {
+        value *= other.value;
+        return *this;
+    }
+    inline bool Test(int square) const { return operator[](square); }
+    inline Bitboard &Set(int square)
+    {
+        value |= (1ULL << square);
+        return *this;
+    }
+    inline Bitboard &Clear(int square)
+    {
+        value &= ~(1ULL << square);
+        return *this;
+    }
+    inline int GetLsbIndex() const { return value ? __builtin_ctzll(value) : -1; }
+    inline int CountBits() const { return __builtin_popcountll(value); }
+    inline int PopLsbIndex()
+    {
+        int index = GetLsbIndex();
+        value &= value - 1;
+        return (index < 64) ? index : -1;
+    }
+    void Print() const;
 
 private:
     uint64_t value;
+    friend class BitProxy;
 };
