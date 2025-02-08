@@ -1,4 +1,4 @@
-
+#pragma once
 
 class Move
 {
@@ -25,7 +25,7 @@ public:
     };
     int Decode(Encoding encoding) const;
 
-private: 
+private:
     int encoding;
     int decodings[8];
 };
